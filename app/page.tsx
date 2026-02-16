@@ -1,114 +1,196 @@
+"use client";
+
 import Link from "next/link";
-import { FileText, Shield, Cloud, Users } from "lucide-react";
+import { FileText, Shield, Cloud, Users, Menu, X, ChevronRight, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+
+const features = [
+  {
+    icon: Shield,
+    title: "Role-Based Access",
+    description: "Granular permission system with multiple role levels for secure document access",
+    color: "bg-blue-500/10 text-blue-600",
+  },
+  {
+    icon: Cloud,
+    title: "Cloud Integration",
+    description:
+      "Seamlessly connect with Google Drive, OneDrive, and other cloud storage providers",
+    color: "bg-sky-500/10 text-sky-600",
+  },
+  {
+    icon: FileText,
+    title: "Document Management",
+    description:
+      "Upload, organize, categorize, and share documents with advanced search capabilities",
+    color: "bg-indigo-500/10 text-indigo-600",
+  },
+  {
+    icon: Users,
+    title: "User Management",
+    description:
+      "Efficiently manage users, assign roles, and control permissions across your organization",
+    color: "bg-violet-500/10 text-violet-600",
+  },
+];
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="border-b border-border/30 bg-[#344E41]">
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-2 text-[#DAD7CD]">
-            <FileText className="h-6 w-6 text-[#A3B18A]" aria-hidden />
+          <Link href="/" className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <GraduationCap className="h-5 w-5 text-primary-foreground" aria-hidden />
+            </div>
             <span className="text-xl font-bold">SGDE</span>
-          </div>
-          <div className="flex gap-4">
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-4">
             <Link href="/auth/login">
-              <Button
-                variant="ghost"
-                className="text-[#DAD7CD] hover:bg-[#3A5A40] hover:text-[#DAD7CD]"
-              >
-                Login
-              </Button>
+              <Button variant="ghost">Login</Button>
             </Link>
             <Link href="/auth/register">
-              <Button className="bg-[#588157] text-[#DAD7CD] hover:bg-[#3A5A40]">
-                Get Started
-              </Button>
+              <Button>Get Started</Button>
             </Link>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t bg-background px-4 py-4">
+            <div className="flex flex-col gap-3">
+              <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start">
+                  Login
+                </Button>
+              </Link>
+              <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
+                <Button className="w-full">Get Started</Button>
+              </Link>
+            </div>
+          </div>
+        )}
       </header>
 
       <main className="flex-1">
-        <section className="container mx-auto px-4 py-20 text-center">
-          <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
-            Sistema de Gestion
-            <br />
-            Documental Educativa
-          </h1>
-          <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
-            Manage your educational institution&apos;s documents efficiently with our modern,
-            secure, and scalable document management system.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Link href="/auth/register">
-              <Button size="lg" className="bg-[#588157] hover:bg-[#3A5A40]">
-                Get Started
-              </Button>
-            </Link>
-            <Link href="/auth/login">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-[#588157] text-[#344E41] hover:bg-[#A3B18A]/20 hover:text-[#344E41]"
-              >
-                Sign In
-              </Button>
-            </Link>
+        {/* Hero Section */}
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/20" />
+          <div className="container relative mx-auto px-4 py-20 md:py-32 text-center">
+            <div className="mx-auto max-w-3xl">
+              <div className="mb-6 inline-flex items-center rounded-full border bg-background/50 px-3 py-1 text-sm text-muted-foreground backdrop-blur">
+                <span className="flex h-2 w-2 rounded-full bg-primary mr-2"></span>
+                Trusted by 1000+ Educational Institutions
+              </div>
+              <h1 className="mb-6 text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
+                Sistema de Gestion <span className="text-primary">Documental Educativa</span>
+              </h1>
+              <p className="mx-auto mb-8 max-w-2xl text-lg md:text-xl text-muted-foreground leading-relaxed">
+                Manage your educational institution&apos;s documents efficiently with our modern,
+                secure, and scalable document management system.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <Link href="/auth/register">
+                  <Button size="lg" className="h-12 px-8">
+                    Get Started Free
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/auth/login">
+                  <Button size="lg" variant="outline" className="h-12 px-8">
+                    Sign In
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="border-t border-border/30 bg-[#A3B18A]/15 py-20">
+        {/* Features Section */}
+        <section className="border-t bg-muted/50 py-20 md:py-32">
           <div className="container mx-auto px-4">
-            <h2 className="mb-12 text-center text-3xl font-bold text-foreground">Key Features</h2>
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-              <div className="flex flex-col items-center rounded-xl border border-border/20 bg-card p-6 text-center shadow-sm transition-shadow hover:shadow-md">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#588157] text-[#DAD7CD]">
-                  <Shield className="h-6 w-6" aria-hidden />
-                </div>
-                <h3 className="mb-2 font-semibold text-foreground">Role-Based Access</h3>
-                <p className="text-sm text-muted-foreground">
-                  Granular permission system with multiple role levels
-                </p>
-              </div>
+            <div className="mx-auto max-w-3xl text-center mb-16">
+              <h2 className="mb-4 text-3xl md:text-4xl font-bold text-foreground">Key Features</h2>
+              <p className="text-lg text-muted-foreground">
+                Everything you need to manage your educational documents efficiently
+              </p>
+            </div>
 
-              <div className="flex flex-col items-center rounded-xl border border-border/20 bg-card p-6 text-center shadow-sm transition-shadow hover:shadow-md">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#588157] text-[#DAD7CD]">
-                  <Cloud className="h-6 w-6" aria-hidden />
-                </div>
-                <h3 className="mb-2 font-semibold text-foreground">Cloud Integration</h3>
-                <p className="text-sm text-muted-foreground">
-                  Connect with Google Drive, OneDrive, and more
-                </p>
-              </div>
+            <div className="grid gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-4">
+              {features.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <div
+                    key={index}
+                    className="group flex flex-col items-start rounded-xl border bg-card p-6 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                  >
+                    <div
+                      className={`mb-4 flex h-12 w-12 items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-110 ${feature.color}`}
+                    >
+                      <Icon className="h-6 w-6" aria-hidden />
+                    </div>
+                    <h3 className="mb-2 text-lg font-semibold text-foreground">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
-              <div className="flex flex-col items-center rounded-xl border border-border/20 bg-card p-6 text-center shadow-sm transition-shadow hover:shadow-md">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#588157] text-[#DAD7CD]">
-                  <FileText className="h-6 w-6" aria-hidden />
-                </div>
-                <h3 className="mb-2 font-semibold text-foreground">Document Management</h3>
-                <p className="text-sm text-muted-foreground">
-                  Upload, organize, and share documents easily
-                </p>
-              </div>
-
-              <div className="flex flex-col items-center rounded-xl border border-border/20 bg-card p-6 text-center shadow-sm transition-shadow hover:shadow-md">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#588157] text-[#DAD7CD]">
-                  <Users className="h-6 w-6" aria-hidden />
-                </div>
-                <h3 className="mb-2 font-semibold text-foreground">User Management</h3>
-                <p className="text-sm text-muted-foreground">
-                  Manage users, roles, and permissions efficiently
-                </p>
-              </div>
+        {/* CTA Section */}
+        <section className="py-20 md:py-32">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-3xl text-center">
+              <h2 className="mb-4 text-3xl md:text-4xl font-bold text-foreground">
+                Ready to get started?
+              </h2>
+              <p className="mb-8 text-lg text-muted-foreground">
+                Join thousands of educational institutions already using SGDE
+              </p>
+              <Link href="/auth/register">
+                <Button size="lg" className="h-12 px-8">
+                  Create your account
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-border/30 bg-[#344E41] py-6">
-        <div className="container mx-auto px-4 text-center text-sm text-[#DAD7CD]">
-          <p>SGDE - Sistema de Gestion Documental Educativa. All rights reserved.</p>
+      {/* Footer */}
+      <footer className="border-t bg-muted/30">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                <GraduationCap className="h-5 w-5 text-primary-foreground" aria-hidden />
+              </div>
+              <span className="font-semibold">SGDE</span>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              &copy; {new Date().getFullYear()} SGDE - Sistema de Gestion Documental Educativa. All
+              rights reserved.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
