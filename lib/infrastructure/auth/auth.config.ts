@@ -28,6 +28,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
   },
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   pages: {
     signIn: "/auth/login",
     error: "/auth/error",
@@ -80,9 +91,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new Error("Invalid credentials");
         }
 
-        const roles = user.userRoles.map((ur) => ur.role.name);
-        const permissions = user.userRoles.flatMap((ur) =>
-          ur.role.rolePermissions.map((rp) => `${rp.permission.resource}:${rp.permission.action}`)
+        const roles = user.userRoles.map((ur: { role: { name: string } }) => ur.role.name);
+        const permissions = user.userRoles.flatMap(
+          (ur: {
+            role: { rolePermissions: { permission: { resource: string; action: string } }[] };
+          }) =>
+            ur.role.rolePermissions.map(
+              (rp: { permission: { resource: string; action: string } }) =>
+                `${rp.permission.resource}:${rp.permission.action}`
+            )
         );
 
         return {
@@ -129,9 +146,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
 
         if (dbUser) {
-          token.roles = dbUser.userRoles.map((ur) => ur.role.name);
-          token.permissions = dbUser.userRoles.flatMap((ur) =>
-            ur.role.rolePermissions.map((rp) => `${rp.permission.resource}:${rp.permission.action}`)
+          token.roles = dbUser.userRoles.map((ur: { role: { name: string } }) => ur.role.name);
+          token.permissions = dbUser.userRoles.flatMap(
+            (ur: {
+              role: { rolePermissions: { permission: { resource: string; action: string } }[] };
+            }) =>
+              ur.role.rolePermissions.map(
+                (rp: { permission: { resource: string; action: string } }) =>
+                  `${rp.permission.resource}:${rp.permission.action}`
+              )
           );
         }
       }
@@ -159,7 +182,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               where: { name: "student" },
             });
 
-            if (studentRole) {
+            if (studentRole && user.id) {
               await prisma.userRole.create({
                 data: {
                   userId: user.id,
@@ -180,7 +203,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async signIn({ user }) {
       logger.info("User signed in", { userId: user.id, email: user.email });
     },
-    async signOut({ token }) {
+    async signOut(event) {
+      const token = "token" in event ? event.token : null;
       logger.info("User signed out", { userId: token?.id });
     },
   },

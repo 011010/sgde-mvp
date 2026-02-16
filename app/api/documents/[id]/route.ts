@@ -12,9 +12,9 @@ import { requireAuth, requirePermission } from "@/lib/infrastructure/auth/rbac";
 import { RESOURCES, ACTIONS } from "@/config/permissions.config";
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
@@ -22,7 +22,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     await requireAuth();
     await requirePermission(`${RESOURCES.DOCUMENT}:${ACTIONS.READ}`);
 
-    const document = await documentService.getDocumentById(params.id);
+    const { id } = await params;
+    const document = await documentService.getDocumentById(id);
 
     return successResponse(document);
   } catch (error) {
@@ -46,10 +47,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const user = await requireAuth();
     await requirePermission(`${RESOURCES.DOCUMENT}:${ACTIONS.UPDATE}`);
 
+    const { id } = await params;
     const body = await request.json();
     const validatedData = updateDocumentSchema.parse(body);
 
-    const document = await documentService.updateDocument(params.id, validatedData, user.id);
+    const document = await documentService.updateDocument(id, validatedData, user.id);
 
     return successResponse(document, "Document updated successfully");
   } catch (error) {
@@ -73,7 +75,8 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const user = await requireAuth();
     await requirePermission(`${RESOURCES.DOCUMENT}:${ACTIONS.DELETE}`);
 
-    await documentService.deleteDocument(params.id, user.id);
+    const { id } = await params;
+    await documentService.deleteDocument(id, user.id);
 
     return successResponse({ success: true }, "Document deleted successfully");
   } catch (error) {

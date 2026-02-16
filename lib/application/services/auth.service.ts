@@ -108,22 +108,40 @@ export class AuthService {
       throw new Error("User not found");
     }
 
-    const roles = user.userRoles.map((ur) => ({
-      id: ur.role.id,
-      name: ur.role.name,
-      description: ur.role.description,
-    }));
-
-    const permissions = user.userRoles.flatMap((ur) =>
-      ur.role.rolePermissions.map((rp) => ({
-        id: rp.permission.id,
-        name: rp.permission.name,
-        resource: rp.permission.resource,
-        action: rp.permission.action,
-      }))
+    const roles = user.userRoles.map(
+      (ur: { role: { id: string; name: string; description: string | null } }) => ({
+        id: ur.role.id,
+        name: ur.role.name,
+        description: ur.role.description,
+      })
     );
 
-    const uniquePermissions = Array.from(new Map(permissions.map((p) => [p.id, p])).values());
+    const permissions = user.userRoles.flatMap(
+      (ur: {
+        role: {
+          rolePermissions: {
+            permission: { id: string; name: string; resource: string; action: string };
+          }[];
+        };
+      }) =>
+        ur.role.rolePermissions.map(
+          (rp: { permission: { id: string; name: string; resource: string; action: string } }) => ({
+            id: rp.permission.id,
+            name: rp.permission.name,
+            resource: rp.permission.resource,
+            action: rp.permission.action,
+          })
+        )
+    );
+
+    const uniquePermissions = Array.from(
+      new Map(
+        permissions.map((p: { id: string; name: string; resource: string; action: string }) => [
+          p.id,
+          p,
+        ])
+      ).values()
+    );
 
     const { password: _, ...userWithoutPassword } = user;
 

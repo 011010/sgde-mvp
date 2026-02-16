@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +11,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { loginSchema, type LoginInput } from "@/lib/application/validators/auth.validators";
 
 export function LoginForm() {
-  const router = useRouter();
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,8 +38,13 @@ export function LoginForm() {
         return;
       }
 
-      router.push("/dashboard");
-      router.refresh();
+      if (result?.ok) {
+        // Full page redirect so middleware sees the new session cookie
+        const raw = new URLSearchParams(window.location.search).get("callbackUrl") || "/dashboard";
+        const callbackUrl = raw.startsWith("/") ? raw : "/dashboard";
+        window.location.href = callbackUrl;
+        return;
+      }
     } catch {
       setError("An error occurred. Please try again.");
     } finally {

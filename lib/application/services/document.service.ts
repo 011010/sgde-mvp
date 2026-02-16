@@ -1,5 +1,4 @@
 import prisma from "@/lib/infrastructure/database/prisma";
-import { Prisma } from "@prisma/client";
 import {
   CreateDocumentInput,
   UpdateDocumentInput,
@@ -223,7 +222,14 @@ export class DocumentService {
   }
 
   async searchDocuments(filters: SearchDocumentsInput) {
-    const where: Prisma.DocumentWhereInput = {
+    const where: {
+      status: string;
+      OR?: object[];
+      categories?: object;
+      tags?: object;
+      source?: string;
+      uploadedBy?: string;
+    } = {
       status: filters.status || DOCUMENT_STATUS.ACTIVE,
     };
 

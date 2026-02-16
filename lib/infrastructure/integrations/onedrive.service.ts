@@ -17,7 +17,7 @@ export class OneDriveService {
     });
   }
 
-  getAuthUrl(userId: string): string {
+  async getAuthUrl(userId: string): Promise<string> {
     const authCodeUrlParameters = {
       scopes: ["Files.Read", "Files.ReadWrite", "User.Read"],
       redirectUri: env.microsoft.redirectUri,
@@ -52,13 +52,13 @@ export class OneDriveService {
           userId,
           provider: "one_drive",
           accessToken: response.accessToken,
-          refreshToken: response.refreshToken || null,
-          expiresAt: response.expiresOn || null,
+          refreshToken: null,
+          expiresAt: response.expiresOn ? new Date(response.expiresOn) : null,
         },
         update: {
           accessToken: response.accessToken,
-          refreshToken: response.refreshToken || undefined,
-          expiresAt: response.expiresOn || null,
+          refreshToken: null,
+          expiresAt: response.expiresOn ? new Date(response.expiresOn) : null,
         },
       });
 
