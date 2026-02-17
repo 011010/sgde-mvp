@@ -2,7 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, FileText, Users, Settings, FolderOpen, Tag, GraduationCap } from "lucide-react";
+import {
+  Home,
+  FileText,
+  Users,
+  Settings,
+  FolderOpen,
+  Tag,
+  GraduationCap,
+  Shield,
+  ScrollText,
+} from "lucide-react";
 import { cn } from "@/utils/cn";
 
 const navigation = [
@@ -19,6 +29,18 @@ const navigation = [
     name: "Users",
     href: "/dashboard/users",
     icon: Users,
+    adminOnly: true,
+  },
+  {
+    name: "Roles",
+    href: "/dashboard/roles",
+    icon: Shield,
+    adminOnly: true,
+  },
+  {
+    name: "Audit Logs",
+    href: "/dashboard/audit-logs",
+    icon: ScrollText,
     adminOnly: true,
   },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
@@ -88,7 +110,7 @@ export function Sidebar() {
           </p>
         </div>
 
-        {navigation.slice(4).map((item) => {
+        {navigation.slice(4, 7).map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
 

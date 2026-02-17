@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Search, MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { Plus, Search, MoreVertical, Pencil, Trash2, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,42 +21,51 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCategories } from "@/hooks/use-api";
-import { CategoryModal } from "@/components/features/categories/category-modal";
-import { DeleteCategoryModal } from "@/components/features/categories/delete-category-modal";
+import { useRoles } from "@/hooks/use-api";
+import { RoleModal } from "@/components/features/roles/role-modal";
+import { ManageRolePermissionsModal } from "@/components/features/roles/manage-role-permissions-modal";
+import { DeleteRoleModal } from "@/components/features/roles/delete-role-modal";
 
-interface Category {
+interface Role {
   id: string;
   name: string;
   description: string | null;
-  color: string | null;
-  _count: { documents: number };
+  rolePermissions: Array<{
+    permission: {
+      id: string;
+      name: string;
+      resource: string;
+      action: string;
+    };
+  }>;
+  _count: { userRoles: number };
 }
 
-export default function CategoriesPage() {
+const systemRoles = ["super_admin", "admin", "coordinator", "teacher", "student"];
+
+export default function RolesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
+  const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [managingPermissionsRole, setManagingPermissionsRole] = useState<Role | null>(null);
+  const [deletingRole, setDeletingRole] = useState<Role | null>(null);
 
-  const { data, isLoading, error } = useCategories({
+  const { data, isLoading, error } = useRoles({
     query: searchQuery,
     page: 1,
     limit: 20,
   });
 
-  const categories = data?.data?.categories || [];
+  const roles = data?.data?.roles || [];
   const pagination = data?.data?.pagination;
 
   if (error) {
     return (
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Categories</h1>
+        <h1 className="text-3xl font-bold">Roles</h1>
         <Card>
           <CardContent className="p-6">
-            <div className="text-center text-red-500">
-              Failed to load categories. Please try again.
-            </div>
+            <div className="text-center text-red-500">Failed to load roles. Please try again.</div>
           </CardContent>
         </Card>
       </div>
@@ -67,25 +76,25 @@ export default function CategoriesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Categories</h1>
-          <p className="text-muted-foreground">Organize your documents with categories</p>
+          <h1 className="text-3xl font-bold">Roles</h1>
+          <p className="text-muted-foreground">Manage system roles and permissions</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          Add Category
+          Add Role
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Categories</CardTitle>
+          <CardTitle>All Roles</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search categories..."
+                placeholder="Search roles..."
                 className="pl-10"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -98,8 +107,9 @@ export default function CategoriesPage() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead>Color</TableHead>
-                <TableHead>Documents</TableHead>
+                <TableHead>Permissions</TableHead>
+                <TableHead>Users</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -108,7 +118,7 @@ export default function CategoriesPage() {
                 [...Array(5)].map((_, i) => (
                   <TableRow key={i}>
                     <TableCell>
-                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-4 w-24" />
                     </TableCell>
                     <TableCell>
                       <Skeleton className="h-4 w-48" />
@@ -119,33 +129,35 @@ export default function CategoriesPage() {
                     <TableCell>
                       <Skeleton className="h-4 w-12" />
                     </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
                     <TableCell></TableCell>
                   </TableRow>
                 ))
-              ) : categories.length === 0 ? (
+              ) : roles.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">
-                    No categories found
+                  <TableCell colSpan={6} className="text-center text-muted-foreground">
+                    No roles found
                   </TableCell>
                 </TableRow>
               ) : (
-                categories.map((category) => (
-                  <TableRow key={category.id}>
-                    <TableCell className="font-medium">{category.name}</TableCell>
-                    <TableCell>{category.description || "-"}</TableCell>
+                roles.map((role) => (
+                  <TableRow key={role.id}>
+                    <TableCell className="font-medium">{role.name}</TableCell>
+                    <TableCell>{role.description || "-"}</TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="h-4 w-4 rounded-full"
-                          style={{ backgroundColor: category.color || "#3b82f6" }}
-                        />
-                        <span className="text-sm text-muted-foreground">
-                          {category.color || "#3b82f6"}
-                        </span>
-                      </div>
+                      <Badge variant="secondary">{role.rolePermissions.length} permissions</Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{category._count.documents}</Badge>
+                      <Badge variant="outline">{role._count.userRoles} users</Badge>
+                    </TableCell>
+                    <TableCell>
+                      {systemRoles.includes(role.name) ? (
+                        <Badge variant="default">System</Badge>
+                      ) : (
+                        <Badge variant="outline">Custom</Badge>
+                      )}
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>
@@ -155,17 +167,23 @@ export default function CategoriesPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => setEditingCategory(category)}>
+                          <DropdownMenuItem onClick={() => setEditingRole(role)}>
                             <Pencil className="mr-2 h-4 w-4" />
                             Edit
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => setDeletingCategory(category)}
-                            className="text-red-600"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
+                          <DropdownMenuItem onClick={() => setManagingPermissionsRole(role)}>
+                            <Shield className="mr-2 h-4 w-4" />
+                            Manage Permissions
                           </DropdownMenuItem>
+                          {!systemRoles.includes(role.name) && (
+                            <DropdownMenuItem
+                              onClick={() => setDeletingRole(role)}
+                              className="text-red-600"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -180,7 +198,7 @@ export default function CategoriesPage() {
               <p className="text-sm text-muted-foreground">
                 Showing {(pagination.page - 1) * pagination.limit + 1} -{" "}
                 {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
-                {pagination.total} categories
+                {pagination.total} roles
               </p>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" disabled={pagination.page <= 1}>
@@ -199,25 +217,27 @@ export default function CategoriesPage() {
         </CardContent>
       </Card>
 
-      <CategoryModal
+      <RoleModal
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false);
-          setEditingCategory(null);
+          setEditingRole(null);
         }}
-        category={editingCategory}
+        role={editingRole}
       />
 
-      <CategoryModal
-        isOpen={!!editingCategory}
-        onClose={() => setEditingCategory(null)}
-        category={editingCategory}
+      <RoleModal isOpen={!!editingRole} onClose={() => setEditingRole(null)} role={editingRole} />
+
+      <ManageRolePermissionsModal
+        isOpen={!!managingPermissionsRole}
+        onClose={() => setManagingPermissionsRole(null)}
+        role={managingPermissionsRole}
       />
 
-      <DeleteCategoryModal
-        isOpen={!!deletingCategory}
-        onClose={() => setDeletingCategory(null)}
-        category={deletingCategory}
+      <DeleteRoleModal
+        isOpen={!!deletingRole}
+        onClose={() => setDeletingRole(null)}
+        role={deletingRole}
       />
     </div>
   );

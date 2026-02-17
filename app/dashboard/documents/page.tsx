@@ -6,51 +6,37 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { DocumentsTable } from "@/components/features/documents/documents-table";
-
-const mockDocuments = [
-  {
-    id: "1",
-    title: "Annual Report 2024",
-    fileName: "annual-report-2024.pdf",
-    fileSize: 2048576,
-    status: "active",
-    source: "local",
-    createdAt: new Date().toISOString(),
-    user: {
-      name: "John Doe",
-      email: "john@example.com",
-    },
-  },
-  {
-    id: "2",
-    title: "Student Handbook",
-    fileName: "student-handbook.docx",
-    fileSize: 1024000,
-    status: "active",
-    source: "google_drive",
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    user: {
-      name: "Jane Smith",
-      email: "jane@example.com",
-    },
-  },
-  {
-    id: "3",
-    title: "Budget Proposal 2024",
-    fileName: "budget-2024.xlsx",
-    fileSize: 512000,
-    status: "archived",
-    source: "one_drive",
-    createdAt: new Date(Date.now() - 172800000).toISOString(),
-    user: {
-      name: "Bob Johnson",
-      email: "bob@example.com",
-    },
-  },
-];
+import { DocumentUploadModal } from "@/components/features/documents/document-upload-modal";
+import { useDocuments } from "@/hooks/use-api";
 
 export default function DocumentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading, error, refetch } = useDocuments({
+    query: searchQuery,
+    page,
+    limit: 20,
+  });
+
+  const documents = data?.data?.documents || [];
+  const pagination = data?.data?.pagination;
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Documents</h1>
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center text-red-500">
+              Failed to load documents. Please try again.
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -59,7 +45,7 @@ export default function DocumentsPage() {
           <h1 className="text-3xl font-bold">Documents</h1>
           <p className="text-muted-foreground">Manage and organize your documents</p>
         </div>
-        <Button>
+        <Button onClick={() => setIsUploadModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Upload Document
         </Button>
@@ -80,21 +66,43 @@ export default function DocumentsPage() {
 
       <Card>
         <CardContent className="p-0">
-          <DocumentsTable documents={mockDocuments} />
+          <DocumentsTable documents={documents} isLoading={isLoading} onDelete={() => refetch()} />
         </CardContent>
       </Card>
 
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">Showing 3 of 3 documents</p>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" disabled>
-            Previous
-          </Button>
-          <Button variant="outline" size="sm" disabled>
-            Next
-          </Button>
+      {pagination && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Showing {(pagination.page - 1) * pagination.limit + 1} -{" "}
+            {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}{" "}
+            documents
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={pagination.page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={pagination.page >= pagination.totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Next
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
+
+      <DocumentUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 }

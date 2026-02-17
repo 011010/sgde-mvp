@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,46 +14,50 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useTags } from "@/hooks/use-api";
+import { TagModal } from "@/components/features/tags/tag-modal";
+import { DeleteTagModal } from "@/components/features/tags/delete-tag-modal";
 
-const mockTags = [
-  {
-    id: "1",
-    name: "urgent",
-    documentCount: 8,
-  },
-  {
-    id: "2",
-    name: "confidential",
-    documentCount: 15,
-  },
-  {
-    id: "3",
-    name: "public",
-    documentCount: 25,
-  },
-  {
-    id: "4",
-    name: "archived",
-    documentCount: 42,
-  },
-  {
-    id: "5",
-    name: "draft",
-    documentCount: 6,
-  },
-  {
-    id: "6",
-    name: "final",
-    documentCount: 18,
-  },
-];
+interface Tag {
+  id: string;
+  name: string;
+  _count: { documents: number };
+}
 
 export default function TagsPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTag, setEditingTag] = useState<Tag | null>(null);
+  const [deletingTag, setDeletingTag] = useState<Tag | null>(null);
 
-  const filteredTags = mockTags.filter((tag) =>
-    tag.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const { data, isLoading, error } = useTags({
+    query: searchQuery,
+    page: 1,
+    limit: 20,
+  });
+
+  const tags = data?.data?.tags || [];
+  const pagination = data?.data?.pagination;
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-3xl font-bold">Tags</h1>
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center text-red-500">Failed to load tags. Please try again.</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -62,7 +66,7 @@ export default function TagsPage() {
           <h1 className="text-3xl font-bold">Tags</h1>
           <p className="text-muted-foreground">Manage document tags and labels</p>
         </div>
-        <Button>
+        <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Add Tag
         </Button>
@@ -85,47 +89,150 @@ export default function TagsPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {filteredTags.map((tag) => (
-              <div
-                key={tag.id}
-                className="flex items-center gap-2 rounded-full border bg-card px-3 py-1"
-              >
-                <Badge variant="outline">{tag.name}</Badge>
-                <span className="text-xs text-muted-foreground">({tag.documentCount})</span>
-                <Button variant="ghost" size="icon" className="h-4 w-4">
-                  <span className="sr-only">Remove</span>×
-                </Button>
-              </div>
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex flex-wrap gap-2">
+              {[...Array(6)].map((_, i) => (
+                <Skeleton key={i} className="h-8 w-24 rounded-full" />
+              ))}
+            </div>
+          ) : tags.length === 0 ? (
+            <div className="text-center text-muted-foreground py-8">No tags found</div>
+          ) : (
+            <div className="flex flex-wrap gap-2 mb-6">
+              {tags.map((tag) => (
+                <div
+                  key={tag.id}
+                  className="flex items-center gap-2 rounded-full border bg-card px-3 py-1"
+                >
+                  <Badge variant="outline">{tag.name}</Badge>
+                  <span className="text-xs text-muted-foreground">({tag._count.documents})</span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-4 w-4">
+                        <MoreVertical className="h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => setEditingTag(tag)}>
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setDeletingTag(tag)}
+                        className="text-red-600"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ))}
+            </div>
+          )}
 
-          <Table className="mt-6">
+          <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Documents</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredTags.map((tag) => (
-                <TableRow key={tag.id}>
-                  <TableCell className="font-medium">
-                    <Badge variant="secondary">{tag.name}</Badge>
-                  </TableCell>
-                  <TableCell>{tag.documentCount}</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
-                      Edit
-                    </Button>
+              {isLoading ? (
+                [...Array(5)].map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <Skeleton className="h-4 w-24" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-12" />
+                    </TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                ))
+              ) : tags.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center text-muted-foreground">
+                    No tags found
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                tags.map((tag) => (
+                  <TableRow key={tag.id}>
+                    <TableCell className="font-medium">
+                      <Badge variant="secondary">{tag.name}</Badge>
+                    </TableCell>
+                    <TableCell>{tag._count.documents}</TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setEditingTag(tag)}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setDeletingTag(tag)}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
+
+          {pagination && pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4">
+              <p className="text-sm text-muted-foreground">
+                Showing {(pagination.page - 1) * pagination.limit + 1} -{" "}
+                {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
+                {pagination.total} tags
+              </p>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" disabled={pagination.page <= 1}>
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={pagination.page >= pagination.totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
+
+      <TagModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingTag(null);
+        }}
+        tag={editingTag}
+      />
+
+      <TagModal isOpen={!!editingTag} onClose={() => setEditingTag(null)} tag={editingTag} />
+
+      <DeleteTagModal
+        isOpen={!!deletingTag}
+        onClose={() => setDeletingTag(null)}
+        tag={deletingTag}
+      />
     </div>
   );
 }

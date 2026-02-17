@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,16 +9,63 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import {
+  useProfile,
+  useUpdateProfile,
+  useChangePassword,
+  useNotificationSettings,
+  useUpdateNotificationSettings,
+} from "@/hooks/use-api";
 
 export default function SettingsPage() {
-  const { data: session } = useSession();
-  const [isLoading, setIsLoading] = useState(false);
+  const { update: updateSession } = useSession();
+  const { data: profileData } = useProfile();
+  const { data: notificationData } = useNotificationSettings();
 
-  const handleSave = async () => {
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsLoading(false);
+  const updateProfile = useUpdateProfile();
+  const changePassword = useChangePassword();
+  const updateNotificationSettings = useUpdateNotificationSettings();
+
+  // Profile form state
+  const [name, setName] = useState(profileData?.data?.name || "");
+  const [email, setEmail] = useState(profileData?.data?.email || "");
+
+  // Password form state
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  // Notification state
+  const [notifications, setNotifications] = useState({
+    emailNotifications: notificationData?.data?.emailNotifications ?? true,
+    documentShared: notificationData?.data?.documentShared ?? true,
+    documentUpdated: notificationData?.data?.documentUpdated ?? true,
+    systemUpdates: notificationData?.data?.systemUpdates ?? true,
+  });
+
+  const handleProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await updateProfile.mutateAsync({ name, email });
+    await updateSession({ name });
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+    await changePassword.mutateAsync({ currentPassword, newPassword });
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+
+  const handleNotificationChange = (key: keyof typeof notifications) => {
+    const newNotifications = { ...notifications, [key]: !notifications[key] };
+    setNotifications(newNotifications);
+    updateNotificationSettings.mutateAsync(newNotifications);
   };
 
   return (
@@ -32,7 +80,6 @@ export default function SettingsPage() {
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="system">System</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-4">
@@ -41,18 +88,32 @@ export default function SettingsPage() {
               <CardTitle>Profile Information</CardTitle>
               <CardDescription>Update your personal information</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input id="name" defaultValue={session?.user?.name || ""} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" defaultValue={session?.user?.email || ""} disabled />
-              </div>
-              <Button onClick={handleSave} disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save Changes"}
-              </Button>
+            <CardContent>
+              <form onSubmit={handleProfileSubmit} className="space-y-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                  />
+                </div>
+                <Button type="submit" disabled={updateProfile.isPending}>
+                  {updateProfile.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Save Changes
+                </Button>
+              </form>
             </CardContent>
           </Card>
         </TabsContent>
@@ -69,21 +130,44 @@ export default function SettingsPage() {
                   <Label>Email Notifications</Label>
                   <p className="text-sm text-muted-foreground">Receive email updates</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch
+                  checked={notifications.emailNotifications}
+                  onCheckedChange={() => handleNotificationChange("emailNotifications")}
+                />
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Document Shares</Label>
-                  <p className="text-sm text-muted-foreground">Notify when documents are shared</p>
+                  <p className="text-sm text-muted-foreground">
+                    Notify when documents are shared with you
+                  </p>
                 </div>
-                <Switch defaultChecked />
+                <Switch
+                  checked={notifications.documentShared}
+                  onCheckedChange={() => handleNotificationChange("documentShared")}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Document Updates</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Notify when shared documents are updated
+                  </p>
+                </div>
+                <Switch
+                  checked={notifications.documentUpdated}
+                  onCheckedChange={() => handleNotificationChange("documentUpdated")}
+                />
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>System Updates</Label>
                   <p className="text-sm text-muted-foreground">Receive system maintenance alerts</p>
                 </div>
-                <Switch />
+                <Switch
+                  checked={notifications.systemUpdates}
+                  onCheckedChange={() => handleNotificationChange("systemUpdates")}
+                />
               </div>
             </CardContent>
           </Card>
@@ -95,56 +179,44 @@ export default function SettingsPage() {
               <CardTitle>Change Password</CardTitle>
               <CardDescription>Update your password</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-2">
-                <Label htmlFor="current">Current Password</Label>
-                <Input id="current" type="password" />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="new">New Password</Label>
-                <Input id="new" type="password" />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="confirm">Confirm New Password</Label>
-                <Input id="confirm" type="password" />
-              </div>
-              <Button onClick={handleSave} disabled={isLoading}>
-                {isLoading ? "Updating..." : "Update Password"}
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="system" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>System Settings</CardTitle>
-              <CardDescription>Configure system-wide settings</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Maintenance Mode</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Put the system in maintenance mode
-                  </p>
+            <CardContent>
+              <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="current">Current Password</Label>
+                  <Input
+                    id="current"
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    required
+                  />
                 </div>
-                <Switch />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>User Registration</Label>
-                  <p className="text-sm text-muted-foreground">Allow new user registrations</p>
+                <div className="grid gap-2">
+                  <Label htmlFor="new">New Password</Label>
+                  <Input
+                    id="new"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    minLength={8}
+                  />
                 </div>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Audit Logging</Label>
-                  <p className="text-sm text-muted-foreground">Enable detailed audit logs</p>
+                <div className="grid gap-2">
+                  <Label htmlFor="confirm">Confirm New Password</Label>
+                  <Input
+                    id="confirm"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
                 </div>
-                <Switch defaultChecked />
-              </div>
+                <Button type="submit" disabled={changePassword.isPending}>
+                  {changePassword.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Update Password
+                </Button>
+              </form>
             </CardContent>
           </Card>
         </TabsContent>

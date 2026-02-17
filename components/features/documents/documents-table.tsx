@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreVertical, Download, Edit, Trash2 } from "lucide-react";
+import { MoreVertical, Download, Edit, Trash2, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate, formatFileSize } from "@/utils/formatters";
+import { useDeleteDocument } from "@/hooks/use-api";
 
 interface Document {
   id: string;
@@ -26,6 +28,7 @@ interface Document {
   fileSize: number;
   status: string;
   source: string;
+  fileUrl?: string;
   createdAt: string;
   user: {
     name: string | null;
@@ -35,9 +38,65 @@ interface Document {
 
 interface DocumentsTableProps {
   documents: Document[];
+  isLoading?: boolean;
+  onDelete?: (id: string) => void;
 }
 
-export function DocumentsTable({ documents }: DocumentsTableProps) {
+export function DocumentsTable({ documents, isLoading, onDelete }: DocumentsTableProps) {
+  const deleteDocument = useDeleteDocument();
+
+  const handleDelete = async (id: string) => {
+    await deleteDocument.mutateAsync(id);
+    onDelete?.(id);
+  };
+
+  if (isLoading) {
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Title</TableHead>
+            <TableHead>File Name</TableHead>
+            <TableHead>Size</TableHead>
+            <TableHead>Uploaded By</TableHead>
+            <TableHead>Date</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Source</TableHead>
+            <TableHead className="w-[50px]"></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {[...Array(5)].map((_, i) => (
+            <TableRow key={i}>
+              <TableCell>
+                <Skeleton className="h-4 w-32" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-24" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-16" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-24" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-20" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-16" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-20" />
+              </TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  }
+
   return (
     <Table>
       <TableHeader>
@@ -71,10 +130,10 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                 <Badge
                   variant={
                     document.status === "active"
-                      ? "success"
+                      ? "default"
                       : document.status === "archived"
-                        ? "warning"
-                        : "secondary"
+                        ? "secondary"
+                        : "outline"
                   }
                 >
                   {document.status}
@@ -91,16 +150,26 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <Download className="mr-2 h-4 w-4" />
-                      Download
+                    <DropdownMenuItem asChild>
+                      <a href={document.fileUrl} download target="_blank" rel="noopener noreferrer">
+                        <Download className="mr-2 h-4 w-4" />
+                        Download
+                      </a>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Edit className="mr-2 h-4 w-4" />
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="text-destructive">
-                      <Trash2 className="mr-2 h-4 w-4" />
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={() => handleDelete(document.id)}
+                      disabled={deleteDocument.isPending}
+                    >
+                      {deleteDocument.isPending ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="mr-2 h-4 w-4" />
+                      )}
                       Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
