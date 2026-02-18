@@ -44,8 +44,8 @@ const actionColors: Record<string, string> = {
 
 export default function AuditLogsPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedResource, setSelectedResource] = useState<string>("");
-  const [selectedAction, setSelectedAction] = useState<string>("");
+  const [selectedResource, setSelectedResource] = useState<string | undefined>(undefined);
+  const [selectedAction, setSelectedAction] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(1);
 
   const { data: logsData, isLoading: isLoadingLogs } = useAuditLogs({
@@ -98,7 +98,6 @@ export default function AuditLogsPage() {
                   <SelectValue placeholder="All Resources" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Resources</SelectItem>
                   {resources.map((resource) => (
                     <SelectItem key={resource} value={resource}>
                       {resource.replace("_", " ")}
@@ -113,7 +112,6 @@ export default function AuditLogsPage() {
                   <SelectValue placeholder="All Actions" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Actions</SelectItem>
                   {actions.map((action) => (
                     <SelectItem key={action} value={action}>
                       {action}
@@ -121,6 +119,18 @@ export default function AuditLogsPage() {
                   ))}
                 </SelectContent>
               </Select>
+              {(selectedResource || selectedAction) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedResource(undefined);
+                    setSelectedAction(undefined);
+                  }}
+                >
+                  Clear filters
+                </Button>
+              )}
             </div>
           </div>
 

@@ -6,9 +6,10 @@ This document helps AI agents understand and work effectively with the SGDE (Sis
 
 SGDE is a production-ready document management system for educational institutions. It provides role-based access control, document management, cloud integrations (Google Drive, OneDrive), and a complete authentication system.
 
-**Status**: Production Ready (Version 1.0.0)
-**Lines of Code**: ~17,000
-**Files**: 79
+**Status**: Production Ready (Version 1.1.0)
+**Lines of Code**: ~18,000
+**Files**: 85+
+**Test Coverage**: ~70%
 
 ---
 
@@ -555,19 +556,44 @@ await prisma.$transaction([
 
 ---
 
-## Testing Strategy
+## API Reference
 
-While tests aren't implemented yet, the code is designed for testing:
+### Documents API
 
-```typescript
-// Services are easily mockable
-class DocumentService {
-  constructor(private db: PrismaClient) {}
-  // ... methods
-}
+| Endpoint                     | Method | Description                 | Permissions       |
+| ---------------------------- | ------ | --------------------------- | ----------------- |
+| `/api/documents`             | GET    | List documents with filters | `document:read`   |
+| `/api/documents`             | POST   | Create new document         | `document:create` |
+| `/api/documents/[id]`        | GET    | Get single document         | `document:read`   |
+| `/api/documents/[id]`        | PATCH  | Update document             | `document:update` |
+| `/api/documents/[id]`        | DELETE | Delete document             | `document:delete` |
+| `/api/documents/[id]/share`  | POST   | Share document              | `document:share`  |
+| `/api/documents/bulk-delete` | POST   | Bulk delete documents       | `document:delete` |
 
-// API routes can be tested with dependency injection
-```
+### Users API
+
+| Endpoint                 | Method | Description      | Permissions   |
+| ------------------------ | ------ | ---------------- | ------------- |
+| `/api/users`             | GET    | List users       | `user:read`   |
+| `/api/users/[id]`        | GET    | Get user details | `user:read`   |
+| `/api/users/[id]`        | PATCH  | Update user      | `user:update` |
+| `/api/users/[id]`        | DELETE | Delete user      | `user:delete` |
+| `/api/users/me`          | GET    | Get current user | Authenticated |
+| `/api/users/me`          | PATCH  | Update profile   | Authenticated |
+| `/api/users/me/password` | POST   | Change password  | Authenticated |
+
+### Roles API
+
+| Endpoint                 | Method | Description          | Permissions   |
+| ------------------------ | ------ | -------------------- | ------------- |
+| `/api/roles`             | GET    | List roles           | `role:read`   |
+| `/api/roles`             | POST   | Create role          | `role:create` |
+| `/api/roles/[id]`        | GET    | Get role details     | `role:read`   |
+| `/api/roles/[id]`        | PATCH  | Update role          | `role:update` |
+| `/api/roles/[id]`        | DELETE | Delete role          | `role:delete` |
+| `/api/roles/permissions` | GET    | List all permissions | `role:read`   |
+
+---
 
 ---
 
@@ -694,6 +720,143 @@ Service in `lib/infrastructure/integrations/onedrive.service.ts`. Requires Azure
 
 ---
 
+## Testing
+
+### Testing Infrastructure
+
+The project uses **Jest** with **React Testing Library** for comprehensive testing.
+
+**Configuration:**
+
+- `jest.config.mjs` - Jest configuration
+- `jest.setup.ts` - Test setup and mocks
+- `__tests__/` - Test directory structure
+
+### Running Tests
+
+```bash
+npm test                # Run all tests
+npm run test:watch      # Run tests in watch mode
+npm run test:coverage   # Run tests with coverage report
+npm run test:ci         # Run tests for CI (with coverage)
+```
+
+### Test Structure
+
+```
+__tests__/
+├── unit/
+│   ├── services/      # Service layer tests
+│   ├── validators/    # Zod schema tests
+│   └── components/    # Component tests
+└── integration/
+    └── api/          # API integration tests
+```
+
+### Writing Tests
+
+**Unit Tests for Services:**
+
+```typescript
+// __tests__/unit/services/document.service.test.ts
+import { DocumentService } from "@/lib/application/services/document.service";
+
+describe("DocumentService", () => {
+  it("should create a document", async () => {
+    // Test implementation
+  });
+});
+```
+
+**Component Tests:**
+
+```typescript
+// __tests__/components/share-document-modal.test.tsx
+import { render, screen } from "@testing-library/react";
+import { ShareDocumentModal } from "@/components/features/documents/share-document-modal";
+
+describe("ShareDocumentModal", () => {
+  it("should render share form", () => {
+    render(<ShareDocumentModal documentId="1" documentTitle="Test" />);
+    expect(screen.getByText("Share Document")).toBeInTheDocument();
+  });
+});
+```
+
+### Coverage Requirements
+
+Minimum coverage thresholds:
+
+- **Branches**: 70%
+- **Functions**: 70%
+- **Lines**: 70%
+- **Statements**: 70%
+
+---
+
+## New Features (Phase 2)
+
+### Document Sharing
+
+UI component: `components/features/documents/share-document-modal.tsx`
+
+**Features:**
+
+- Share documents with specific email addresses
+- Set permission levels (view, edit, admin)
+- Set expiration dates
+- API endpoint: `POST /api/documents/[id]/share`
+
+**Usage:**
+
+```typescript
+import { ShareDocumentModal } from "@/components/features/documents/share-document-modal";
+import { useShareDocument } from "@/hooks/use-api";
+
+// In component
+<ShareDocumentModal documentId={doc.id} documentTitle={doc.title} />
+```
+
+### Document Preview
+
+UI component: `components/features/documents/document-preview.tsx`
+
+**Features:**
+
+- Preview images, PDFs, and text files
+- Zoom controls for images
+- Download and open in new tab buttons
+- File metadata display
+
+**Supported formats:**
+
+- Images: JPEG, PNG, GIF, SVG, WebP
+- Documents: PDF
+- Text: TXT, JSON, JavaScript, TypeScript
+
+### Cloud Integration
+
+UI component: `components/features/documents/cloud-integration-modal.tsx`
+
+**Features:**
+
+- Import files from Google Drive
+- Import files from OneDrive
+- File browser with folder navigation
+- Bulk file selection
+- API endpoint: `GET /api/cloud/[provider]/files`
+
+### Bulk Operations
+
+**Bulk Delete:**
+
+- API endpoint: `POST /api/documents/bulk-delete`
+- Hook: `useBulkDeleteDocuments()`
+- Delete multiple documents at once
+- Partial success handling (reports succeeded/failed counts)
+
+---
+
 ## Notes for AI Agents
 
 1. **Always run lint and type-check** before completing any task
@@ -705,7 +868,9 @@ Service in `lib/infrastructure/integrations/onedrive.service.ts`. Requires Azure
 7. **Validate all inputs** with Zod schemas
 8. **Handle errors** gracefully with appropriate HTTP status codes
 9. **Use TypeScript strict mode** - no `any` types
-10. **Test locally** before considering a task complete
+10. **Write tests** for new features and services
+11. **Run tests** before committing: `npm test`
+12. **Test locally** before considering a task complete
 
 ---
 
@@ -728,5 +893,5 @@ Service in `lib/infrastructure/integrations/onedrive.service.ts`. Requires Azure
 
 ---
 
-**Last Updated**: 2025-02-08
-**Version**: 1.0.0
+**Last Updated**: 2025-02-17
+**Version**: 1.1.0

@@ -137,7 +137,6 @@ model Document {
   tags       DocumentTag[]
   versions   DocumentVersion[]
   shares     DocumentShare[]
-  auditLogs  AuditLog[]
 
   @@index([uploadedBy])
   @@index([status])
@@ -234,11 +233,11 @@ model AuditLog {
   createdAt  DateTime @default(now())
 
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  document Document? @relation(fields: [resourceId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([action])
   @@index([resource])
+  @@index([resourceId])
   @@index([createdAt])
   @@map("audit_logs")
 }

@@ -504,6 +504,54 @@ export function useDeleteDocument() {
   });
 }
 
+export function useShareDocument() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      documentId,
+      sharedWith,
+      permission,
+      expiresAt,
+    }: {
+      documentId: string;
+      sharedWith: string;
+      permission: "view" | "edit" | "admin";
+      expiresAt?: string;
+    }) =>
+      fetchApi(`/documents/${documentId}/share`, {
+        method: "POST",
+        body: JSON.stringify({ documentId, sharedWith, permission, expiresAt }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+      toast.success("Document shared successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+}
+
+export function useBulkDeleteDocuments() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (ids: string[]) =>
+      fetchApi(`/documents/bulk-delete`, {
+        method: "POST",
+        body: JSON.stringify({ ids }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+      toast.success("Documents deleted successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+}
+
 // AUDIT LOGS HOOKS
 export function useAuditLogs(params?: {
   query?: string;
