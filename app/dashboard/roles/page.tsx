@@ -218,15 +218,13 @@ export default function RolesPage() {
       </Card>
 
       <RoleModal
-        isOpen={isModalOpen}
+        isOpen={isModalOpen || !!editingRole}
         onClose={() => {
           setIsModalOpen(false);
           setEditingRole(null);
         }}
         role={editingRole}
       />
-
-      <RoleModal isOpen={!!editingRole} onClose={() => setEditingRole(null)} role={editingRole} />
 
       <ManageRolePermissionsModal
         isOpen={!!managingPermissionsRole}
