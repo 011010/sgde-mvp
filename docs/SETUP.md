@@ -81,8 +81,8 @@ GOOGLE_CLIENT_SECRET=""
 MICROSOFT_CLIENT_ID=""
 MICROSOFT_CLIENT_SECRET=""
 
-UPLOADTHING_SECRET=""
-UPLOADTHING_APP_ID=""
+# UploadThing v7: single token (replaces old UPLOADTHING_SECRET + UPLOADTHING_APP_ID)
+UPLOADTHING_TOKEN=""
 ```
 
 ### 4. Set Up Database
@@ -233,11 +233,11 @@ Create `.vscode/settings.json`:
 
 1. Go to https://uploadthing.com
 2. Create account and app
-3. Get API keys
+3. Go to Dashboard → API Keys → copy the **Token** (v7 uses a single token)
 4. Add to `.env`:
    ```bash
-   UPLOADTHING_SECRET="sk_live_xxxxx"
-   UPLOADTHING_APP_ID="xxxxx"
+   # v7 uses a single UPLOADTHING_TOKEN (not the old UPLOADTHING_SECRET / UPLOADTHING_APP_ID)
+   UPLOADTHING_TOKEN="eyJhcHBJZCI6InRlc3QiLCJhcGlLZXkiOiJza19saXZlX3h4eHh4In0="
    ```
 
 ### Google Drive Integration
