@@ -12,10 +12,13 @@ import {
   GraduationCap,
   Shield,
   ScrollText,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { useSession, signOut } from "next-auth/react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-const navigation = [
+const mainNavigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   {
     name: "Documents",
@@ -25,29 +28,29 @@ const navigation = [
   },
   { name: "Categories", href: "/dashboard/categories", icon: FolderOpen },
   { name: "Tags", href: "/dashboard/tags", icon: Tag },
+];
+
+const adminNavigation = [
   {
     name: "Users",
     href: "/dashboard/users",
     icon: Users,
-    adminOnly: true,
   },
   {
     name: "Roles",
     href: "/dashboard/roles",
     icon: Shield,
-    adminOnly: true,
   },
   {
     name: "Audit Logs",
     href: "/dashboard/audit-logs",
     icon: ScrollText,
-    adminOnly: true,
   },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const isActive = (href: string) => {
     if (href === "/dashboard") {
@@ -55,6 +58,14 @@ export function Sidebar() {
     }
     return pathname.startsWith(href);
   };
+
+  const userInitials =
+    session?.user?.name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2) || session?.user?.email?.[0]?.toUpperCase() || "U";
 
   return (
     <div className="flex h-full w-64 flex-col border-r bg-card">
@@ -69,14 +80,14 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 p-3">
-        <div className="mb-4 px-3">
+      <nav className="flex-1 overflow-y-auto space-y-1 p-3">
+        <div className="mb-2 px-3">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Main
           </p>
         </div>
 
-        {navigation.slice(0, 4).map((item) => {
+        {mainNavigation.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
 
@@ -104,13 +115,13 @@ export function Sidebar() {
           );
         })}
 
-        <div className="mt-6 mb-4 px-3">
+        <div className="mt-6 mb-2 px-3">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Administration
           </p>
         </div>
 
-        {navigation.slice(4, 7).map((item) => {
+        {adminNavigation.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
 
@@ -130,18 +141,50 @@ export function Sidebar() {
             </Link>
           );
         })}
+
+        <div className="mt-6 mb-2 px-3">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Account
+          </p>
+        </div>
+
+        <Link
+          href="/dashboard/settings"
+          className={cn(
+            "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+            isActive("/dashboard/settings")
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          )}
+        >
+          <Settings className={cn("h-5 w-5 mr-3", isActive("/dashboard/settings") && "text-primary-foreground")} />
+          <span>Settings</span>
+        </Link>
       </nav>
 
-      {/* Footer */}
-      <div className="border-t p-4">
-        <div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-            <span className="text-xs font-semibold text-primary">V1</span>
-          </div>
+      {/* User Footer */}
+      <div className="border-t p-3">
+        <div className="flex items-center gap-3 rounded-lg p-2 hover:bg-accent transition-colors group">
+          <Avatar className="h-8 w-8 shrink-0">
+            <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+              {userInitials}
+            </AvatarFallback>
+          </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">SGDE</p>
-            <p className="text-xs text-muted-foreground">v1.0.0</p>
+            <p className="text-sm font-medium truncate">
+              {session?.user?.name || "User"}
+            </p>
+            <p className="text-xs text-muted-foreground truncate">
+              {session?.user?.email || ""}
+            </p>
           </div>
+          <button
+            onClick={() => signOut({ callbackUrl: "/auth/login" })}
+            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-destructive/10 hover:text-destructive"
+            aria-label="Sign out"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </div>
