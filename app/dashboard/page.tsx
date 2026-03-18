@@ -247,21 +247,23 @@ export default function DashboardPage() {
               {quickActions.map((action) => {
                 const Icon = action.icon;
                 return (
-                  <Link key={action.title} href={action.href}>
-                    <button className="w-full flex items-center gap-4 rounded-lg border p-4 text-left transition-all duration-200 hover:bg-accent hover:shadow-sm group">
-                      <div
-                        className={`flex h-10 w-10 items-center justify-center rounded-lg ${action.color}`}
-                      >
-                        <Icon className="h-5 w-5" />
+                  <Link
+                    key={action.title}
+                    href={action.href}
+                    className="group flex items-center gap-4 rounded-lg border p-4 transition-all duration-200 hover:bg-accent hover:shadow-sm"
+                  >
+                    <div
+                      className={`flex h-10 w-10 items-center justify-center rounded-lg ${action.color}`}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium group-hover:text-primary transition-colors">
+                        {action.title}
                       </div>
-                      <div className="flex-1">
-                        <div className="font-medium group-hover:text-primary transition-colors">
-                          {action.title}
-                        </div>
-                        <div className="text-sm text-muted-foreground">{action.description}</div>
-                      </div>
-                      <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </button>
+                      <div className="text-sm text-muted-foreground">{action.description}</div>
+                    </div>
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </Link>
                 );
               })}

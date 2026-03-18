@@ -130,6 +130,33 @@ export function Sidebar() {
             </Link>
           );
         })}
+
+        <div className="mt-6 mb-4 px-3">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Preferences
+          </p>
+        </div>
+
+        {navigation.slice(7).map((item) => {
+          const active = isActive(item.href);
+          const Icon = item.icon;
+
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={cn(
+                "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                active
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              )}
+            >
+              <Icon className={cn("h-5 w-5 mr-3", active && "text-primary-foreground")} />
+              <span>{item.name}</span>
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Footer */}
