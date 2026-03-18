@@ -138,9 +138,11 @@ export default function Home() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden flex h-11 w-11 items-center justify-center rounded-md"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav"
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -148,7 +150,7 @@ export default function Home() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t bg-background px-4 py-4">
+          <div id="mobile-nav" className="md:hidden border-t bg-background px-4 py-4">
             <div className="flex flex-col gap-3">
               <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start">
@@ -163,7 +165,7 @@ export default function Home() {
         )}
       </header>
 
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         {/* Hero Section */}
         <section className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-indigo-500/5" />
@@ -201,16 +203,19 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="border-y bg-muted/30">
-          <div className="container mx-auto px-4 py-12">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {stats.map((stat) => (
+        {/* Social Proof / Stats Section */}
+        <section className="border-t border-b bg-background py-12">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+              {[
+                { value: "1,000+", label: "Institutions" },
+                { value: "2M+", label: "Documents Managed" },
+                { value: "50K+", label: "Active Users" },
+                { value: "99.9%", label: "Uptime SLA" },
+              ].map((stat) => (
                 <div key={stat.label} className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-foreground mb-1">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
+                  <div className="text-3xl font-bold text-foreground">{stat.value}</div>
+                  <div className="mt-1 text-sm text-muted-foreground">{stat.label}</div>
                 </div>
               ))}
             </div>

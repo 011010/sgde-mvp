@@ -1,51 +1,60 @@
 import Link from "next/link";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Users, Tag, BookOpen } from "lucide-react";
 import { RegisterForm } from "@/components/features/auth/register-form";
 
 export default function RegisterPage() {
   return (
     <div className="flex min-h-screen">
-      {/* Left decorative panel (hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center bg-primary p-12 text-primary-foreground">
-        <div className="max-w-sm text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-foreground/10 mb-6 mx-auto">
-            <GraduationCap className="h-9 w-9 text-primary-foreground" />
+      {/* Branding Panel */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-primary p-12 text-primary-foreground">
+        <Link href="/" className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-foreground/20">
+            <GraduationCap className="h-6 w-6" />
           </div>
-          <h2 className="text-3xl font-bold mb-4">Join SGDE</h2>
-          <p className="text-lg text-primary-foreground/80 leading-relaxed">
-            Create your institution&apos;s account and start managing documents securely from day
-            one.
-          </p>
-          <div className="mt-10 space-y-3 text-left">
+          <span className="text-2xl font-bold">SGDE</span>
+        </Link>
+
+        <div className="space-y-8">
+          <div>
+            <h1 className="text-4xl font-bold leading-tight">
+              Join 1,000+ educational institutions already using SGDE
+            </h1>
+            <p className="mt-4 text-lg text-primary-foreground/80">
+              Get started for free. No credit card required.
+            </p>
+          </div>
+
+          <div className="space-y-4">
             {[
-              "Free to get started",
-              "No credit card required",
-              "Full access to all features",
-              "Secure and compliant",
-            ].map((f) => (
-              <div key={f} className="flex items-center gap-3 text-sm text-primary-foreground/80">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-foreground/20 text-[10px] font-bold">
-                  ✓
-                </span>
-                {f}
+              { icon: Users, text: "Manage unlimited users and roles" },
+              { icon: Tag, text: "Categorize and tag documents effortlessly" },
+              { icon: BookOpen, text: "Full audit trail for compliance" },
+            ].map(({ icon: Icon, text }) => (
+              <div key={text} className="flex items-center gap-3">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-foreground/20">
+                  <Icon className="h-4 w-4" />
+                </div>
+                <span className="text-sm text-primary-foreground/90">{text}</span>
               </div>
             ))}
           </div>
         </div>
+
+        <p className="text-sm text-primary-foreground/60">
+          &copy; {new Date().getFullYear()} SGDE — Sistema de Gestion Documental Educativa
+        </p>
       </div>
 
-      {/* Right form panel */}
-      <div className="flex flex-1 items-center justify-center bg-background p-6">
+      {/* Form Panel */}
+      <div className="flex flex-1 flex-col items-center justify-center bg-background p-6 lg:p-12">
         <div className="w-full max-w-md space-y-6">
-          {/* Mobile logo */}
-          <div className="lg:hidden text-center">
-            <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary mb-3">
+          {/* Mobile-only logo */}
+          <div className="flex flex-col items-center text-center lg:hidden">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary">
               <GraduationCap className="h-7 w-7 text-primary-foreground" />
             </div>
             <h1 className="text-2xl font-bold">SGDE</h1>
-            <p className="text-sm text-muted-foreground">
-              Sistema de Gestión Documental Educativa
-            </p>
+            <p className="text-sm text-muted-foreground">Sistema de Gestion Documental Educativa</p>
           </div>
 
           <RegisterForm />
