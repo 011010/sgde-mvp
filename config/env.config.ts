@@ -29,8 +29,7 @@ export const env = {
     secret: process.env.NEXTAUTH_SECRET as string,
   },
   upload: {
-    secret: process.env.UPLOADTHING_SECRET || "",
-    appId: process.env.UPLOADTHING_APP_ID || "",
+    token: process.env.UPLOADTHING_TOKEN || "",
   },
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID || "",

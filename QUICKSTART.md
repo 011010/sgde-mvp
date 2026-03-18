@@ -318,8 +318,8 @@ npm run db:seed
 2. Crear app
 3. Copiar API keys a `.env`:
    ```
-   UPLOADTHING_SECRET="sk_live_xxxxx"
-   UPLOADTHING_APP_ID="xxxxx"
+   # v7 uses a single token (replaces old UPLOADTHING_SECRET + UPLOADTHING_APP_ID)
+   UPLOADTHING_TOKEN="eyJhcHBJZCI6InRlc3QiLCJhcGlLZXkiOiJza19saXZlX3h4eHh4In0="
    ```
 
 ### Google Drive

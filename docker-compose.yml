@@ -51,6 +51,7 @@ services:
       NEXTAUTH_URL: http://localhost:3000
       NEXTAUTH_SECRET: development-secret-change-in-production-32chars-min
       NODE_ENV: development
+      UPLOADTHING_TOKEN: ${UPLOADTHING_TOKEN:-}
       WATCHPACK_POLLING: "true"
     ports:
       - "3000:3000"
