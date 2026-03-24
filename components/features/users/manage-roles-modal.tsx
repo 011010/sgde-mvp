@@ -57,9 +57,9 @@ export function ManageUserRolesModal({ isOpen, onClose, user }: ManageUserRolesM
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Manage Roles</DialogTitle>
+          <DialogTitle>Gestionar Roles</DialogTitle>
           <DialogDescription>
-            Assign roles to {user?.name || user?.userRoles?.[0]?.role?.name || "user"}
+            Asignar roles a {user?.name || user?.userRoles?.[0]?.role?.name || "usuario"}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -82,11 +82,11 @@ export function ManageUserRolesModal({ isOpen, onClose, user }: ManageUserRolesM
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" disabled={updateUserRoles.isPending}>
               {updateUserRoles.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Roles
+              Guardar Roles
             </Button>
           </div>
         </form>

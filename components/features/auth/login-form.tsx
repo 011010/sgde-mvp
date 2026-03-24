@@ -35,15 +35,15 @@ export function LoginForm() {
       });
 
       if (result?.error) {
-        toast.error("Invalid email or password", {
-          description: "Please check your credentials and try again.",
+        toast.error("Correo o contraseña incorrectos", {
+          description: "Verifica tus credenciales e intenta de nuevo.",
         });
         return;
       }
 
       if (result?.ok) {
-        toast.success("Login successful!", {
-          description: "Redirecting to dashboard...",
+        toast.success("¡Inicio de sesión exitoso!", {
+          description: "Redirigiendo al panel...",
         });
         // Full page redirect so middleware sees the new session cookie
         const raw = new URLSearchParams(window.location.search).get("callbackUrl") || "/dashboard";
@@ -52,8 +52,8 @@ export function LoginForm() {
         return;
       }
     } catch {
-      toast.error("An error occurred", {
-        description: "Please try again later.",
+      toast.error("Ocurrió un error", {
+        description: "Por favor intenta más tarde.",
       });
     } finally {
       setIsLoading(false);
@@ -62,20 +62,20 @@ export function LoginForm() {
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
-    toast.info("Redirecting to Google...");
+    toast.info("Redirigiendo a Google...");
     await signIn("google", { callbackUrl: "/dashboard" });
   };
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Welcome back</CardTitle>
-        <CardDescription>Enter your credentials to access your account</CardDescription>
+        <CardTitle className="text-2xl">Bienvenido de nuevo</CardTitle>
+        <CardDescription>Ingresa tus credenciales para acceder a tu cuenta</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Correo electrónico</Label>
             <Input
               id="email"
               type="email"
@@ -89,16 +89,16 @@ export function LoginForm() {
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Contraseña</Label>
               <a href="#" className="text-sm text-muted-foreground hover:text-primary">
-                Forgot password?
+                ¿Olvidaste tu contraseña?
               </a>
             </div>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
+                placeholder="Ingresa tu contraseña"
                 {...register("password")}
                 disabled={isLoading}
                 className="h-11 pr-10"
@@ -121,10 +121,10 @@ export function LoginForm() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Signing in...
+                Iniciando sesión...
               </>
             ) : (
-              "Sign in"
+              "Iniciar sesión"
             )}
           </Button>
 
@@ -133,7 +133,7 @@ export function LoginForm() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              <span className="bg-background px-2 text-muted-foreground">O continúa con</span>
             </div>
           </div>
 

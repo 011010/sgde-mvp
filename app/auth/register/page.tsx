@@ -17,18 +17,18 @@ export default function RegisterPage() {
         <div className="space-y-8">
           <div>
             <h1 className="text-4xl font-bold leading-tight">
-              Join 1,000+ educational institutions already using SGDE
+              Únete a las instituciones educativas que ya usan SGDE
             </h1>
             <p className="mt-4 text-lg text-primary-foreground/80">
-              Get started for free. No credit card required.
+              Comienza gratis. Sin tarjeta de crédito.
             </p>
           </div>
 
           <div className="space-y-4">
             {[
-              { icon: Users, text: "Manage unlimited users and roles" },
-              { icon: Tag, text: "Categorize and tag documents effortlessly" },
-              { icon: BookOpen, text: "Full audit trail for compliance" },
+              { icon: Users, text: "Administra usuarios y roles sin límites" },
+              { icon: Tag, text: "Categoriza y etiqueta documentos fácilmente" },
+              { icon: BookOpen, text: "Trazabilidad completa para cumplimiento normativo" },
             ].map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-3">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-foreground/20">
@@ -60,9 +60,9 @@ export default function RegisterPage() {
           <RegisterForm />
 
           <p className="text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
+            ¿Ya tienes cuenta?{" "}
             <Link href="/auth/login" className="font-medium text-primary hover:underline">
-              Sign in
+              Inicia sesión
             </Link>
           </p>
         </div>

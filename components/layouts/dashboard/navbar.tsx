@@ -21,15 +21,17 @@ export function Navbar() {
   const { data: session } = useSession();
 
   const handleSignOut = async () => {
-    toast.info("Signing out...");
+    toast.info("Cerrando sesión...");
     await signOut({ callbackUrl: "/auth/login" });
   };
 
   return (
     <div className="flex h-16 items-center justify-between border-b bg-card px-6">
       <div>
-        <h2 className="text-lg font-semibold">Welcome back, {session?.user?.name || "User"}</h2>
-        <p className="text-sm text-muted-foreground">Manage your documents and files efficiently</p>
+        <h2 className="text-lg font-semibold">Bienvenido, {session?.user?.name || "Usuario"}</h2>
+        <p className="text-sm text-muted-foreground">
+          Gestiona tus documentos y archivos eficientemente
+        </p>
       </div>
 
       <div className="flex items-center gap-2">
@@ -71,12 +73,12 @@ export function Navbar() {
               <Link href="/dashboard/settings">
                 <DropdownMenuItem className="cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
-                  Settings
+                  Configuración
                 </DropdownMenuItem>
               </Link>
               <DropdownMenuItem className="cursor-pointer">
                 <Shield className="mr-2 h-4 w-4" />
-                Profile
+                Perfil
                 <Badge variant="secondary" className="ml-auto text-xs">
                   {session?.user?.roles?.[0] || "User"}
                 </Badge>
@@ -88,7 +90,7 @@ export function Navbar() {
               className="text-destructive cursor-pointer focus:text-destructive"
             >
               <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
+              Cerrar sesión
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

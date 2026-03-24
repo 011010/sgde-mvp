@@ -34,19 +34,19 @@ export function DeleteUserModal({ isOpen, onClose, user }: DeleteUserModalProps)
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete User</DialogTitle>
+          <DialogTitle>Eliminar Usuario</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete {user?.name || user?.email}? This action cannot be
-            undone.
+            ¿Estás seguro de que deseas eliminar a {user?.name || user?.email}? Esta acción no se
+            puede deshacer.
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            Cancelar
           </Button>
           <Button variant="destructive" onClick={handleDelete} disabled={deleteUser.isPending}>
             {deleteUser.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Delete User
+            Eliminar Usuario
           </Button>
         </div>
       </DialogContent>

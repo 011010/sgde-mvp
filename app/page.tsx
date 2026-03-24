@@ -391,51 +391,87 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="mx-auto max-w-2xl flex flex-col items-center gap-3">
-              {/* RDN - Top */}
+            <div className="mx-auto max-w-3xl flex flex-col items-center gap-0">
+              {/* Nivel 1: Director(a) de ITD's */}
               <div className="w-full max-w-sm rounded-xl border-2 border-primary bg-primary/5 px-6 py-4 text-center shadow-md">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                  Nivel Directivo
+                  Nivel 1
                 </p>
-                <p className="font-semibold text-foreground">
-                  Representante de la Dirección Nacional (RDN)
-                </p>
+                <p className="font-semibold text-foreground">Director(a) de ITD&apos;s</p>
               </div>
 
               <div className="w-px h-6 bg-border" />
 
-              {/* Coordinador y Administrador */}
-              <div className="w-full grid grid-cols-2 gap-4 max-w-xl">
-                {["Coordinador del SGI", "Administrador del SGI"].map((cargo) => (
-                  <div
-                    key={cargo}
-                    className="rounded-lg border bg-card px-4 py-3 text-center shadow-sm"
-                  >
+              {/* Nivel 2: RDN + Director(a) de ITS */}
+              <div className="w-full grid grid-cols-2 gap-4">
+                <div className="flex flex-col items-center gap-0">
+                  <div className="w-full rounded-lg border-2 border-primary/50 bg-primary/5 px-4 py-3 text-center shadow-sm">
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                      Coordinación
+                      Nivel 2
                     </p>
-                    <p className="text-sm font-medium text-foreground">{cargo}</p>
+                    <p className="text-sm font-medium text-foreground">
+                      Representante de la Dirección Nacional (RDN)
+                    </p>
                   </div>
-                ))}
-              </div>
-
-              <div className="w-px h-6 bg-border" />
-
-              {/* Sitios */}
-              <div className="w-full grid grid-cols-2 gap-3">
-                {[
-                  "Auditor SGI LITES",
-                  "Coordinador del SGI ITS",
-                  "Coordinador del SGI ITES",
-                  "Coordinador del SGI ITES Miahuatlán",
-                ].map((cargo) => (
-                  <div key={cargo} className="rounded-lg border bg-muted/50 px-4 py-3 text-center">
+                  <div className="w-px h-6 bg-border" />
+                  {/* Nivel 3: Coordinador Nacional del G3 */}
+                  <div className="w-full rounded-lg border bg-card px-4 py-3 text-center shadow-sm">
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
-                      Sitio
+                      Nivel 3
                     </p>
-                    <p className="text-sm font-medium text-foreground">{cargo}</p>
+                    <p className="text-sm font-medium text-foreground">
+                      Coordinador Nacional del G3
+                    </p>
                   </div>
-                ))}
+                  <div className="w-px h-6 bg-border" />
+                  {/* Nivel 4: bajo Coordinador Nacional */}
+                  <div className="w-full flex flex-col gap-2">
+                    {[
+                      "Auditor(a) Líder Nacional del G3",
+                      "Controlador(a) Operacional Nacional del G3",
+                      "Controlador(a) de Información Documentada del G3",
+                    ].map((cargo) => (
+                      <div
+                        key={cargo}
+                        className="rounded-lg border bg-muted/50 px-3 py-2 text-center"
+                      >
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-0.5">
+                          Nivel 4
+                        </p>
+                        <p className="text-xs font-medium text-foreground">{cargo}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center gap-0">
+                  <div className="w-full rounded-lg border-2 border-primary/50 bg-primary/5 px-4 py-3 text-center shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                      Nivel 2
+                    </p>
+                    <p className="text-sm font-medium text-foreground">Director(a) de ITS</p>
+                  </div>
+                  <div className="w-px h-6 bg-border" />
+                  {/* Nivel 4: Administrador(a) del SGI del ITS */}
+                  <div className="w-full rounded-lg border bg-card px-4 py-3 text-center shadow-sm">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                      Nivel 4
+                    </p>
+                    <p className="text-sm font-medium text-foreground">
+                      Administrador(a) del SGI del ITS
+                    </p>
+                  </div>
+                  <div className="w-px h-6 bg-border" />
+                  {/* Nivel 5: Controlador(a) de Información Documentada del ITS */}
+                  <div className="w-full rounded-lg border bg-muted/50 px-4 py-3 text-center">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                      Nivel 5
+                    </p>
+                    <p className="text-xs font-medium text-foreground">
+                      Controlador(a) de Información Documentada del ITS
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

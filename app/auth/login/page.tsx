@@ -17,18 +17,18 @@ export default function LoginPage() {
         <div className="space-y-8">
           <div>
             <h1 className="text-4xl font-bold leading-tight">
-              Manage your educational documents with confidence
+              Gestiona los documentos educativos con confianza
             </h1>
             <p className="mt-4 text-lg text-primary-foreground/80">
-              Secure, organized, and accessible document management for educational institutions.
+              Gestión documental segura, organizada y accesible para instituciones educativas.
             </p>
           </div>
 
           <div className="space-y-4">
             {[
-              { icon: Shield, text: "Role-based access control for your institution" },
-              { icon: Cloud, text: "Seamless cloud storage integration" },
-              { icon: FileText, text: "Advanced document organization and search" },
+              { icon: Shield, text: "Control de acceso por rol para tu institución" },
+              { icon: Cloud, text: "Integración con almacenamiento en la nube" },
+              { icon: FileText, text: "Organización avanzada de documentos y búsqueda" },
             ].map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-3">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-foreground/20">
@@ -60,9 +60,9 @@ export default function LoginPage() {
           <LoginForm />
 
           <p className="text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{" "}
+            ¿No tienes cuenta?{" "}
             <Link href="/auth/register" className="font-medium text-primary hover:underline">
-              Create one
+              Créala aquí
             </Link>
           </p>
         </div>

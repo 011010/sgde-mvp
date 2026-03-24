@@ -48,23 +48,23 @@ export function CreateUserModal({ isOpen, onClose }: CreateUserModalProps) {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create User</DialogTitle>
-          <DialogDescription>Add a new user to the system</DialogDescription>
+          <DialogTitle>Crear Usuario</DialogTitle>
+          <DialogDescription>Agregar nuevo usuario al sistema</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="create-name">Name</Label>
+            <Label htmlFor="create-name">Nombre</Label>
             <Input
               id="create-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Full name"
+              placeholder="Nombre completo"
               required
               disabled={createUser.isPending}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="create-email">Email</Label>
+            <Label htmlFor="create-email">Correo electrónico</Label>
             <Input
               id="create-email"
               type="email"
@@ -76,14 +76,14 @@ export function CreateUserModal({ isOpen, onClose }: CreateUserModalProps) {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="create-password">Password</Label>
+            <Label htmlFor="create-password">Contraseña</Label>
             <div className="relative">
               <Input
                 id="create-password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min. 8 characters"
+                placeholder="Mín. 8 caracteres"
                 required
                 disabled={createUser.isPending}
                 className="pr-10"
@@ -98,7 +98,7 @@ export function CreateUserModal({ isOpen, onClose }: CreateUserModalProps) {
               </button>
             </div>
             <p className="text-xs text-muted-foreground">
-              Must contain uppercase, lowercase, and a number.
+              Debe contener mayúsculas, minúsculas y un número.
             </p>
           </div>
           <div className="flex justify-end gap-2">
@@ -108,11 +108,11 @@ export function CreateUserModal({ isOpen, onClose }: CreateUserModalProps) {
               onClick={handleClose}
               disabled={createUser.isPending}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" disabled={createUser.isPending}>
               {createUser.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create User
+              Crear Usuario
             </Button>
           </div>
         </form>

@@ -44,22 +44,22 @@ export function EditUserModal({ isOpen, onClose, user }: EditUserModalProps) {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit User</DialogTitle>
-          <DialogDescription>Update user information</DialogDescription>
+          <DialogTitle>Editar Usuario</DialogTitle>
+          <DialogDescription>Actualizar información del usuario</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">Nombre</Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="User name"
+              placeholder="Nombre del usuario"
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Correo electrónico</Label>
             <Input
               id="email"
               type="email"
@@ -71,11 +71,11 @@ export function EditUserModal({ isOpen, onClose, user }: EditUserModalProps) {
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" disabled={updateUser.isPending}>
               {updateUser.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Changes
+              Guardar Cambios
             </Button>
           </div>
         </form>

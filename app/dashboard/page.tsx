@@ -57,7 +57,9 @@ function StatCard({
     <Card className="transition-all duration-300 hover:shadow-md group">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        <div className={`rounded-lg p-2 transition-transform duration-200 group-hover:scale-110 ${color}`}>
+        <div
+          className={`rounded-lg p-2 transition-transform duration-200 group-hover:scale-110 ${color}`}
+        >
           <Icon className="h-4 w-4" />
         </div>
       </CardHeader>
@@ -76,29 +78,29 @@ function StatCard({
 
 const quickActions = [
   {
-    title: "Upload Document",
-    description: "Add new files to the system",
+    title: "Subir Documento",
+    description: "Agregar nuevos archivos al sistema",
     icon: Upload,
     href: "/dashboard/documents?action=upload",
     color: "bg-blue-500/10 text-blue-600 dark:bg-blue-500/20",
   },
   {
-    title: "Browse Documents",
-    description: "Search and view all documents",
+    title: "Explorar Documentos",
+    description: "Buscar y ver todos los documentos",
     icon: Search,
     href: "/dashboard/documents",
     color: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20",
   },
   {
-    title: "Manage Categories",
-    description: "Organize document categories",
+    title: "Gestionar Categorías",
+    description: "Organizar categorías de documentos",
     icon: Tags,
     href: "/dashboard/categories",
     color: "bg-violet-500/10 text-violet-600 dark:bg-violet-500/20",
   },
   {
-    title: "View Audit Logs",
-    description: "Review system activity",
+    title: "Ver Registros de Auditoría",
+    description: "Revisar la actividad del sistema",
     icon: Activity,
     href: "/dashboard/audit-logs",
     color: "bg-rose-500/10 text-rose-600 dark:bg-rose-500/20",
@@ -136,33 +138,33 @@ export default function DashboardPage() {
 
   const stats = [
     {
-      title: "Total Documents",
+      title: "Total de Documentos",
       value: totalDocuments.toLocaleString(),
-      description: "Across all categories",
+      description: "En todas las categorías",
       icon: FileText,
       color: "bg-blue-500/10 text-blue-600 dark:bg-blue-500/20",
       href: "/dashboard/documents",
     },
     {
-      title: "Active Users",
+      title: "Usuarios Activos",
       value: totalUsers.toLocaleString(),
-      description: "Registered in the system",
+      description: "Registrados en el sistema",
       icon: Users,
       color: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20",
       href: "/dashboard/users",
     },
     {
-      title: "Categories",
+      title: "Categorías",
       value: totalCategories.toLocaleString(),
-      description: "Document collections",
+      description: "Colecciones de documentos",
       icon: FolderOpen,
       color: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20",
       href: "/dashboard/categories",
     },
     {
-      title: "Tags",
+      title: "Etiquetas",
       value: totalTags.toLocaleString(),
-      description: "Available labels",
+      description: "Etiquetas disponibles",
       icon: Tag,
       color: "bg-violet-500/10 text-violet-600 dark:bg-violet-500/20",
       href: "/dashboard/tags",
@@ -181,10 +183,8 @@ export default function DashboardPage() {
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Overview of your document management system
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight">Panel Principal</h1>
+        <p className="text-muted-foreground">Resumen del sistema de gestión documental</p>
       </div>
 
       {/* Stats Grid */}
@@ -200,12 +200,12 @@ export default function DashboardPage() {
         <Card className="lg:col-span-2 transition-all duration-300 hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Recent Documents</CardTitle>
-              <CardDescription>Latest uploaded files</CardDescription>
+              <CardTitle>Documentos Recientes</CardTitle>
+              <CardDescription>Archivos subidos recientemente</CardDescription>
             </div>
             <Link href="/dashboard/documents">
               <Button variant="ghost" size="sm">
-                View all
+                Ver todos
                 <ArrowUpRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>
@@ -229,12 +229,14 @@ export default function DashboardPage() {
             ) : recentDocuments.length === 0 ? (
               <div className="py-10 text-center">
                 <FileText className="h-10 w-10 mx-auto mb-3 text-muted-foreground/40" />
-                <p className="text-sm font-medium text-muted-foreground">No documents yet</p>
-                <p className="text-xs text-muted-foreground mt-1">Upload your first document to get started</p>
+                <p className="text-sm font-medium text-muted-foreground">Sin documentos aún</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Sube tu primer documento para comenzar
+                </p>
                 <Link href="/dashboard/documents?action=upload">
                   <Button size="sm" className="mt-4">
                     <Upload className="mr-2 h-4 w-4" />
-                    Upload Document
+                    Subir Documento
                   </Button>
                 </Link>
               </div>
@@ -259,12 +261,14 @@ export default function DashboardPage() {
                             {doc.title || doc.fileName}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {doc.fileSize ? `${(doc.fileSize / 1024 / 1024).toFixed(1)} MB` : "Unknown size"}
+                            {doc.fileSize
+                              ? `${(doc.fileSize / 1024 / 1024).toFixed(1)} MB`
+                              : "Unknown size"}
                           </p>
                         </div>
                       </div>
                       <span className="text-xs text-muted-foreground shrink-0 ml-3">
-                        {new Date(doc.createdAt).toLocaleDateString("en-US", {
+                        {new Date(doc.createdAt).toLocaleDateString("es-MX", {
                           month: "short",
                           day: "numeric",
                         })}
@@ -280,8 +284,8 @@ export default function DashboardPage() {
         {/* Quick Actions */}
         <Card className="transition-all duration-300 hover:shadow-md">
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common tasks and shortcuts</CardDescription>
+            <CardTitle>Acciones Rápidas</CardTitle>
+            <CardDescription>Tareas comunes y accesos directos</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -317,12 +321,12 @@ export default function DashboardPage() {
       <Card className="transition-all duration-300 hover:shadow-md">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>Latest system actions</CardDescription>
+            <CardTitle>Actividad Reciente</CardTitle>
+            <CardDescription>Últimas acciones del sistema</CardDescription>
           </div>
           <Link href="/dashboard/audit-logs">
             <Button variant="ghost" size="sm">
-              View all
+              Ver todos
               <ArrowUpRight className="ml-1 h-4 w-4" />
             </Button>
           </Link>
@@ -344,7 +348,7 @@ export default function DashboardPage() {
           ) : recentLogs.length === 0 ? (
             <div className="py-8 text-center">
               <HardDrive className="h-10 w-10 mx-auto mb-3 text-muted-foreground/40" />
-              <p className="text-sm text-muted-foreground">No recent activity</p>
+              <p className="text-sm text-muted-foreground">Sin actividad reciente</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -371,7 +375,7 @@ export default function DashboardPage() {
                     )}
                   </div>
                   <span className="text-xs text-muted-foreground shrink-0">
-                    {new Date(log.createdAt).toLocaleDateString("en-US", {
+                    {new Date(log.createdAt).toLocaleDateString("es-MX", {
                       month: "short",
                       day: "numeric",
                     })}

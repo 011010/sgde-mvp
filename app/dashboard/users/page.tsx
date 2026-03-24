@@ -62,9 +62,9 @@ const roleColors: Record<string, string> = {
 const roleLabels: Record<string, string> = {
   super_admin: "Super Admin",
   admin: "Admin",
-  coordinator: "Coordinator",
-  teacher: "Teacher",
-  student: "Student",
+  coordinator: "Coordinador",
+  teacher: "Docente",
+  student: "Estudiante",
 };
 
 export default function UsersPage() {
@@ -87,13 +87,13 @@ export default function UsersPage() {
   if (error) {
     return (
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Users</h1>
+        <h1 className="text-3xl font-bold">Usuarios</h1>
         <Card>
           <CardContent className="p-12 text-center">
             <UsersIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-            <p className="text-red-500 font-medium">Failed to load users.</p>
+            <p className="text-red-500 font-medium">Error al cargar usuarios.</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Please check your connection and try again.
+              Verifica tu conexión e intenta de nuevo.
             </p>
           </CardContent>
         </Card>
@@ -105,19 +105,19 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Users</h1>
-          <p className="text-muted-foreground">Manage system users and their roles</p>
+          <h1 className="text-3xl font-bold tracking-tight">Usuarios</h1>
+          <p className="text-muted-foreground">Gestiona los usuarios del sistema y sus roles</p>
         </div>
         <div className="flex items-center gap-3">
           {pagination && (
             <div className="hidden sm:flex items-center gap-2 rounded-lg border bg-card px-3 py-2">
               <UsersIcon className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">{pagination.total} total users</span>
+              <span className="text-sm font-medium">{pagination.total} usuarios en total</span>
             </div>
           )}
           <Button onClick={() => setIsCreating(true)}>
             <UserPlus className="mr-2 h-4 w-4" />
-            Add User
+            Agregar Usuario
           </Button>
         </div>
       </div>
@@ -125,11 +125,11 @@ export default function UsersPage() {
       <Card>
         <CardHeader className="pb-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <CardTitle className="flex-1">All Users</CardTitle>
+            <CardTitle className="flex-1">Todos los Usuarios</CardTitle>
             <div className="relative flex-1 sm:max-w-xs">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search users..."
+                placeholder="Buscar usuarios..."
                 className="pl-10"
                 value={searchQuery}
                 onChange={(e) => {
@@ -144,9 +144,9 @@ export default function UsersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
+                <TableHead>Usuario</TableHead>
                 <TableHead>Roles</TableHead>
-                <TableHead className="hidden md:table-cell">Joined</TableHead>
+                <TableHead className="hidden md:table-cell">Fecha de registro</TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -176,10 +176,10 @@ export default function UsersPage() {
                 <TableRow>
                   <TableCell colSpan={4} className="py-16 text-center">
                     <UsersIcon className="h-10 w-10 mx-auto mb-3 text-muted-foreground/40" />
-                    <p className="font-medium text-muted-foreground">No users found</p>
+                    <p className="font-medium text-muted-foreground">Sin usuarios encontrados</p>
                     {searchQuery && (
                       <p className="text-sm text-muted-foreground mt-1">
-                        Try adjusting your search query
+                        Intenta ajustar tu búsqueda
                       </p>
                     )}
                   </TableCell>
@@ -201,7 +201,7 @@ export default function UsersPage() {
                         </Avatar>
                         <div>
                           <p className="font-medium group-hover:text-primary transition-colors">
-                            {user.name || "Unnamed User"}
+                            {user.name || "Sin nombre"}
                           </p>
                           <p className="text-sm text-muted-foreground">{user.email}</p>
                         </div>
@@ -211,7 +211,7 @@ export default function UsersPage() {
                       <div className="flex flex-wrap gap-1">
                         {user.userRoles.length === 0 ? (
                           <Badge variant="outline" className="text-muted-foreground">
-                            No role
+                            Sin rol
                           </Badge>
                         ) : (
                           user.userRoles.map((userRole) => (
@@ -226,7 +226,7 @@ export default function UsersPage() {
                       </div>
                     </TableCell>
                     <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
-                      {new Date(user.createdAt).toLocaleDateString("en-US", {
+                      {new Date(user.createdAt).toLocaleDateString("es-MX", {
                         year: "numeric",
                         month: "short",
                         day: "numeric",
@@ -242,18 +242,18 @@ export default function UsersPage() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => setEditingUser(user)}>
                             <Pencil className="mr-2 h-4 w-4" />
-                            Edit
+                            Editar
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setManagingRolesUser(user)}>
                             <Shield className="mr-2 h-4 w-4" />
-                            Manage Roles
+                            Gestionar Roles
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => setDeletingUser(user)}
                             className="text-red-600"
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
+                            Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -267,9 +267,9 @@ export default function UsersPage() {
           {pagination && pagination.totalPages > 1 && (
             <div className="flex items-center justify-between px-4 py-4 border-t">
               <p className="text-sm text-muted-foreground">
-                Showing {(pagination.page - 1) * pagination.limit + 1}–
-                {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
-                {pagination.total} users
+                Mostrando {(pagination.page - 1) * pagination.limit + 1}–
+                {Math.min(pagination.page * pagination.limit, pagination.total)} de{" "}
+                {pagination.total} usuarios
               </p>
               <div className="flex gap-2">
                 <Button
@@ -278,7 +278,7 @@ export default function UsersPage() {
                   disabled={pagination.page <= 1}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                 >
-                  Previous
+                  Anterior
                 </Button>
                 <Button
                   variant="outline"
@@ -286,7 +286,7 @@ export default function UsersPage() {
                   disabled={pagination.page >= pagination.totalPages}
                   onClick={() => setPage((p) => p + 1)}
                 >
-                  Next
+                  Siguiente
                 </Button>
               </div>
             </div>

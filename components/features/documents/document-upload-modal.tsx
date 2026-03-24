@@ -49,12 +49,12 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
 
   const handleSubmit = async () => {
     if (uploadedFiles.length === 0) {
-      toast.error("Please upload at least one file");
+      toast.error("Por favor sube al menos un archivo");
       return;
     }
 
     if (!title.trim()) {
-      toast.error("Title is required");
+      toast.error("El título es obligatorio");
       return;
     }
 
@@ -80,14 +80,14 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
 
         if (!response.ok) {
           const error = await response.json();
-          throw new Error(error.error || "Failed to create document");
+          throw new Error(error.error || "Error al crear el documento");
         }
       }
 
       toast.success(
         uploadedFiles.length === 1
-          ? "Document uploaded successfully"
-          : `${uploadedFiles.length} documents uploaded successfully`
+          ? "Documento subido exitosamente"
+          : `${uploadedFiles.length} documentos subidos exitosamente`
       );
 
       setUploadedFiles([]);
@@ -96,7 +96,7 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
       onClose();
       onSuccess?.();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to upload document");
+      toast.error(error instanceof Error ? error.message : "Error al subir el documento");
     } finally {
       setIsSubmitting(false);
     }
@@ -137,10 +137,10 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Upload Document</DialogTitle>
+          <DialogTitle>Subir Documento</DialogTitle>
           <DialogDescription>
-            Upload files to the document management system. Supported formats: PDF, Word, Excel,
-            PowerPoint, images, and text files.
+            Sube archivos al sistema de gestión documental. Formatos admitidos: PDF, Word, Excel,
+            PowerPoint, imágenes y archivos de texto.
           </DialogDescription>
         </DialogHeader>
 
@@ -225,24 +225,24 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
 
           <div className="space-y-2">
             <Label htmlFor="title">
-              Title <span className="text-red-500">*</span>
+              Título <span className="text-red-500">*</span>
             </Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter document title"
+              placeholder="Ingresa el título del documento"
               disabled={isSubmitting}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">Descripción</Label>
             <Input
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter document description (optional)"
+              placeholder="Ingresa la descripción del documento (opcional)"
               disabled={isSubmitting}
             />
           </div>
@@ -250,7 +250,7 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
 
         <DialogFooter>
           <Button variant="outline" onClick={handleClose} disabled={isSubmitting}>
-            Cancel
+            Cancelar
           </Button>
           <Button
             onClick={handleSubmit}
@@ -259,10 +259,10 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Uploading...
+                Subiendo...
               </>
             ) : (
-              "Upload Document"
+              "Subir Documento"
             )}
           </Button>
         </DialogFooter>

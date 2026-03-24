@@ -39,13 +39,13 @@ export function RegisterForm() {
       const result = await response.json();
 
       if (!response.ok) {
-        setError(result.error || "Registration failed");
+        setError(result.error || "El registro falló");
         return;
       }
 
       router.push("/auth/login?registered=true");
     } catch {
-      setError("An error occurred. Please try again.");
+      setError("Ocurrió un error. Por favor intenta de nuevo.");
     } finally {
       setIsLoading(false);
     }
@@ -54,8 +54,8 @@ export function RegisterForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
-        <CardTitle>Create Account</CardTitle>
-        <CardDescription>Enter your information to create an account</CardDescription>
+        <CardTitle>Crear Cuenta</CardTitle>
+        <CardDescription>Ingresa tu información para crear una cuenta</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -64,11 +64,11 @@ export function RegisterForm() {
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">Nombre</Label>
             <Input
               id="name"
               type="text"
-              placeholder="John Doe"
+              placeholder="Nombre completo"
               {...register("name")}
               disabled={isLoading}
             />
@@ -76,11 +76,11 @@ export function RegisterForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Correo electrónico</Label>
             <Input
               id="email"
               type="email"
-              placeholder="john@example.com"
+              placeholder="correo@ejemplo.com"
               {...register("email")}
               disabled={isLoading}
             />
@@ -88,11 +88,11 @@ export function RegisterForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">Contraseña</Label>
             <Input
               id="password"
               type="password"
-              placeholder="Create a strong password"
+              placeholder="Crea una contraseña segura"
               {...register("password")}
               disabled={isLoading}
             />
@@ -102,7 +102,7 @@ export function RegisterForm() {
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Create Account"}
+            {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
           </Button>
         </form>
       </CardContent>

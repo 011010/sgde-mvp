@@ -19,22 +19,24 @@ import { useSession, signOut } from "next-auth/react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const mainNavigation = [
-  { name: "Dashboard", href: "/dashboard", icon: Home },
+  { name: "Panel Principal", href: "/dashboard", icon: Home },
   {
-    name: "Documents",
+    name: "Documentos",
     href: "/dashboard/documents",
     icon: FileText,
-    badge: "New",
+    badge: "Nuevo",
   },
-  { name: "Categories", href: "/dashboard/categories", icon: FolderOpen },
-  { name: "Tags", href: "/dashboard/tags", icon: Tag },
+  { name: "Categorías", href: "/dashboard/categories", icon: FolderOpen },
+  { name: "Etiquetas", href: "/dashboard/tags", icon: Tag },
 ];
 
-const preferencesNavigation = [{ name: "Settings", href: "/dashboard/settings", icon: Settings }];
+const preferencesNavigation = [
+  { name: "Configuración", href: "/dashboard/settings", icon: Settings },
+];
 
 const adminNavigation = [
   {
-    name: "Users",
+    name: "Usuarios",
     href: "/dashboard/users",
     icon: Users,
   },
@@ -44,7 +46,7 @@ const adminNavigation = [
     icon: Shield,
   },
   {
-    name: "Audit Logs",
+    name: "Registros de Auditoría",
     href: "/dashboard/audit-logs",
     icon: ScrollText,
   },
@@ -87,7 +89,7 @@ export function Sidebar() {
       <nav className="flex-1 overflow-y-auto space-y-1 p-3">
         <div className="mb-2 px-3">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Main
+            Principal
           </p>
         </div>
 
@@ -121,7 +123,7 @@ export function Sidebar() {
 
         <div className="mt-6 mb-2 px-3">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Administration
+            Administración
           </p>
         </div>
 
@@ -148,7 +150,7 @@ export function Sidebar() {
 
         <div className="mt-6 mb-4 px-3">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Preferences
+            Preferencias
           </p>
         </div>
 
@@ -189,7 +191,7 @@ export function Sidebar() {
           <button
             onClick={() => signOut({ callbackUrl: "/auth/login" })}
             className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-destructive/10 hover:text-destructive"
-            aria-label="Sign out"
+            aria-label="Cerrar sesión"
           >
             <LogOut className="h-4 w-4" />
           </button>
