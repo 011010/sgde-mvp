@@ -16,7 +16,7 @@ function validateEnv(): void {
   }
 }
 
-if (process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV !== "test" && process.env.NEXT_PHASE !== "phase-production-build") {
   validateEnv();
 }
 
