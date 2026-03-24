@@ -30,6 +30,8 @@ const mainNavigation = [
   { name: "Tags", href: "/dashboard/tags", icon: Tag },
 ];
 
+const preferencesNavigation = [{ name: "Settings", href: "/dashboard/settings", icon: Settings }];
+
 const adminNavigation = [
   {
     name: "Users",
@@ -65,7 +67,9 @@ export function Sidebar() {
       .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .slice(0, 2) || session?.user?.email?.[0]?.toUpperCase() || "U";
+      .slice(0, 2) ||
+    session?.user?.email?.[0]?.toUpperCase() ||
+    "U";
 
   return (
     <div className="flex h-full w-64 flex-col border-r bg-card">
@@ -148,7 +152,7 @@ export function Sidebar() {
           </p>
         </div>
 
-        {navigation.slice(7).map((item) => {
+        {preferencesNavigation.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
 
@@ -179,12 +183,8 @@ export function Sidebar() {
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">
-              {session?.user?.name || "User"}
-            </p>
-            <p className="text-xs text-muted-foreground truncate">
-              {session?.user?.email || ""}
-            </p>
+            <p className="text-sm font-medium truncate">{session?.user?.name || "User"}</p>
+            <p className="text-xs text-muted-foreground truncate">{session?.user?.email || ""}</p>
           </div>
           <button
             onClick={() => signOut({ callbackUrl: "/auth/login" })}

@@ -148,6 +148,7 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
           {uploadedFiles.length === 0 ? (
             <UploadDropzone<OurFileRouter, "documentUploader">
               endpoint="documentUploader"
+              config={{ mode: "auto" }}
               onClientUploadComplete={(res) => {
                 if (res) {
                   const files = res.map((file) => ({
@@ -197,6 +198,7 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
               ))}
               <UploadDropzone<OurFileRouter, "documentUploader">
                 endpoint="documentUploader"
+                config={{ mode: "auto" }}
                 onClientUploadComplete={(res) => {
                   if (res) {
                     const files = res.map((file) => ({

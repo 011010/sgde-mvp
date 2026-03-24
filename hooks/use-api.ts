@@ -62,6 +62,25 @@ export function useUsers(params?: { query?: string; page?: number; limit?: numbe
   });
 }
 
+export function useCreateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { name: string; email: string; password: string }) =>
+      fetchApi("/auth/register", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      toast.success("User created successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+}
+
 export function useUpdateUser() {
   const queryClient = useQueryClient();
 

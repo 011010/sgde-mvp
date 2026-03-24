@@ -25,4 +25,5 @@ COPY . .
 EXPOSE 3000
 
 # Run migrations and start dev server
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run dev"]
+# If deploy fails (e.g. failed migration in DB), reset DB and retry — safe for dev
+CMD ["sh", "-c", "npx prisma migrate deploy || (echo 'Migration failed, resetting database...' && npx prisma migrate reset --force && npx prisma migrate deploy) && npm run dev"]

@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Search, MoreVertical, Pencil, Trash2, Shield, UserPlus, Users as UsersIcon } from "lucide-react";
+import {
+  Search,
+  MoreVertical,
+  Pencil,
+  Trash2,
+  Shield,
+  UserPlus,
+  Users as UsersIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,6 +34,7 @@ import { useUsers } from "@/hooks/use-api";
 import { EditUserModal } from "@/components/features/users/edit-user-modal";
 import { ManageUserRolesModal } from "@/components/features/users/manage-roles-modal";
 import { DeleteUserModal } from "@/components/features/users/delete-user-modal";
+import { CreateUserModal } from "@/components/features/users/create-user-modal";
 
 interface User {
   id: string;
@@ -61,6 +70,7 @@ const roleLabels: Record<string, string> = {
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [isCreating, setIsCreating] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [managingRolesUser, setManagingRolesUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
@@ -82,7 +92,9 @@ export default function UsersPage() {
           <CardContent className="p-12 text-center">
             <UsersIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
             <p className="text-red-500 font-medium">Failed to load users.</p>
-            <p className="text-sm text-muted-foreground mt-1">Please check your connection and try again.</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Please check your connection and try again.
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -96,14 +108,18 @@ export default function UsersPage() {
           <h1 className="text-3xl font-bold tracking-tight">Users</h1>
           <p className="text-muted-foreground">Manage system users and their roles</p>
         </div>
-        {pagination && (
-          <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3">
+          {pagination && (
             <div className="hidden sm:flex items-center gap-2 rounded-lg border bg-card px-3 py-2">
               <UsersIcon className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">{pagination.total} total users</span>
             </div>
-          </div>
-        )}
+          )}
+          <Button onClick={() => setIsCreating(true)}>
+            <UserPlus className="mr-2 h-4 w-4" />
+            Add User
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -277,6 +293,8 @@ export default function UsersPage() {
           )}
         </CardContent>
       </Card>
+
+      <CreateUserModal isOpen={isCreating} onClose={() => setIsCreating(false)} />
 
       <EditUserModal
         isOpen={!!editingUser}
