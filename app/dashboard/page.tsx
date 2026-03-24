@@ -82,28 +82,28 @@ const quickActions = [
     description: "Agregar nuevos archivos al sistema",
     icon: Upload,
     href: "/dashboard/documents?action=upload",
-    color: "bg-blue-500/10 text-blue-600 dark:bg-blue-500/20",
+    color: "bg-blue-600/10 text-blue-700",
   },
   {
     title: "Explorar Documentos",
     description: "Buscar y ver todos los documentos",
     icon: Search,
     href: "/dashboard/documents",
-    color: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20",
+    color: "bg-sky-600/10 text-sky-700",
   },
   {
     title: "Gestionar Categorías",
     description: "Organizar categorías de documentos",
     icon: Tags,
     href: "/dashboard/categories",
-    color: "bg-violet-500/10 text-violet-600 dark:bg-violet-500/20",
+    color: "bg-indigo-600/10 text-indigo-700",
   },
   {
     title: "Ver Registros de Auditoría",
     description: "Revisar la actividad del sistema",
     icon: Activity,
     href: "/dashboard/audit-logs",
-    color: "bg-rose-500/10 text-rose-600 dark:bg-rose-500/20",
+    color: "bg-slate-600/10 text-slate-700",
   },
 ];
 
@@ -142,7 +142,7 @@ export default function DashboardPage() {
       value: totalDocuments.toLocaleString(),
       description: "En todas las categorías",
       icon: FileText,
-      color: "bg-blue-500/10 text-blue-600 dark:bg-blue-500/20",
+      color: "bg-blue-600/10 text-blue-700",
       href: "/dashboard/documents",
     },
     {
@@ -150,7 +150,7 @@ export default function DashboardPage() {
       value: totalUsers.toLocaleString(),
       description: "Registrados en el sistema",
       icon: Users,
-      color: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20",
+      color: "bg-sky-600/10 text-sky-700",
       href: "/dashboard/users",
     },
     {
@@ -158,7 +158,7 @@ export default function DashboardPage() {
       value: totalCategories.toLocaleString(),
       description: "Colecciones de documentos",
       icon: FolderOpen,
-      color: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20",
+      color: "bg-indigo-600/10 text-indigo-700",
       href: "/dashboard/categories",
     },
     {
@@ -166,7 +166,7 @@ export default function DashboardPage() {
       value: totalTags.toLocaleString(),
       description: "Etiquetas disponibles",
       icon: Tag,
-      color: "bg-violet-500/10 text-violet-600 dark:bg-violet-500/20",
+      color: "bg-slate-600/10 text-slate-700",
       href: "/dashboard/tags",
     },
   ];
