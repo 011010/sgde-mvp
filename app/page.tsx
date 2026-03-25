@@ -1,80 +1,105 @@
 "use client";
 
 import Link from "next/link";
-import {
-  FileText,
-  Shield,
-  Cloud,
-  Users,
-  Menu,
-  X,
-  ChevronRight,
-  GraduationCap,
-  Lock,
-  BarChart3,
-  Search,
-  CheckCircle2,
-  Target,
-  Award,
-  Zap,
-} from "lucide-react";
+import { Menu, X, ChevronRight, GraduationCap, Target, Award, Zap, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
-const features = [
+const integrantes = [
   {
-    icon: Shield,
-    title: "Control de Acceso por Rol",
-    description:
-      "Sistema de permisos granular con múltiples niveles de rol para acceso seguro a documentos.",
-    color: "bg-blue-500/10 text-blue-600",
+    nombre: "Instituto Tecnológico Superior de Rioverde",
+    domicilio:
+      "Carretera Rioverde - San Ciro Km 4.5 S/N, María del Rosario, Rioverde, San Luis Potosí, CP 79610",
+    logo: "/LOGO ITSRV-01-1.png",
   },
   {
-    icon: Cloud,
-    title: "Integración en la Nube",
-    description:
-      "Conecta con Google Drive, OneDrive y otros proveedores de almacenamiento en la nube.",
-    color: "bg-sky-500/10 text-sky-600",
+    nombre: "Instituto Tecnológico de Estudios Superiores de Los Cabos",
+    domicilio:
+      "Boulevard Tecnológico de los Cabos S/N, Guayamitas, San José del Cabo, Baja California Sur, CP 23407",
+    logo: "/logotipo ITES fondo Blanco.png",
   },
   {
-    icon: FileText,
-    title: "Gestión Documental",
-    description:
-      "Sube, organiza, categoriza y comparte documentos con capacidades de búsqueda avanzada.",
-    color: "bg-indigo-500/10 text-indigo-600",
+    nombre: "Instituto Tecnológico Superior de Champotón",
+    domicilio: "Carretera Champotón - Isla Aguada Km. 2, El Arenal, Champotón, Campeche, CP 24400",
+    logo: "/LOGO COLOR 1LOGO ORIGINAL ITESCHAM.svg",
   },
   {
-    icon: Users,
-    title: "Gestión de Usuarios",
-    description: "Administra usuarios, asigna roles y controla permisos en toda la institución.",
-    color: "bg-violet-500/10 text-violet-600",
+    nombre: "Instituto Tecnológico Superior de Costa Chica",
+    domicilio: "Carretera Ometepec Igualapa Km. 1, Talapa, Ometepec, Guerrero, CP 41706",
+    logo: "/ITSCCH.png",
   },
   {
-    icon: Lock,
-    title: "Seguridad Institucional",
-    description:
-      "Cifrado, trazabilidad completa y manejo de documentos listo para cumplimiento normativo.",
-    color: "bg-rose-500/10 text-rose-600",
+    nombre: "Instituto Tecnológico Superior de Tierra Blanca",
+    domicilio: "Avenida Veracruz S/N, Col. Pemex, Tierra Blanca, Veracruz, CP 95180",
+    logo: "/itstb.png",
   },
   {
-    icon: BarChart3,
-    title: "Reportes y Análisis",
-    description:
-      "Rastrea el uso de documentos, patrones de acceso y genera reportes de cumplimiento.",
-    color: "bg-amber-500/10 text-amber-600",
+    nombre: "Instituto Tecnológico Superior de Zacatecas Norte",
+    domicilio: "Carretera a González Ortega Km 3, Ap 178 S/N, Rio Grande, Zacatecas, CP 98400",
+    logo: "/itszn.webp",
   },
   {
-    icon: Search,
-    title: "Búsqueda Avanzada",
-    description: "Encuentra documentos al instante por nombre, categoría, etiqueta o contenido.",
-    color: "bg-emerald-500/10 text-emerald-600",
+    nombre: "Instituto Tecnológico Superior de Cosamaloapan",
+    domicilio: "Av. Tecnológico S/N, Los Ángeles, Cosamaloapan, Veracruz, CP 95400",
+    logo: "/LOGO VECTORIZADO TEC COSAMA SIN FONDO.png",
   },
   {
-    icon: CheckCircle2,
-    title: "Registro de Auditoría",
-    description:
-      "Historial completo de actividades: quién accedió, modificó o compartió cada documento.",
-    color: "bg-teal-500/10 text-teal-600",
+    nombre: "Instituto Tecnológico Superior de Mulegé",
+    domicilio: "Loma los Frailes S/N, Centro, Santa Rosalía Mulegé, Baja California Sur, CP 23920",
+    logo: "/mulege.png",
+  },
+  {
+    nombre: "Instituto Tecnológico Superior de San Luis Potosí Capital",
+    domicilio:
+      "Carretera 57 México - Piedras Negras Km. 189 + 100, No. 6501, Villa de Pozos, Qro., San Luis Potosí, CP 7842",
+    logo: "/logotipo-del-tecnologico-de-san-luis-potosi-1024x576.png",
+  },
+  {
+    nombre: "Instituto Tecnológico Superior de Fresnillo",
+    domicilio: "Av. Tecnológico No. 2000, Solidaridad, Fresnillo, Zacatecas, CP 99010",
+    logo: "/itse.png",
+  },
+  {
+    nombre: "Tecnológico de Estudios Superiores de Chalco",
+    domicilio:
+      "Carretera Federal México-Cuautla s/n, Col. La Candelaria Tlapana, Chalco, Estado de México, CP 5664",
+    logo: "/Logo-TESCHA.jpg",
+  },
+  {
+    nombre: "Instituto Tecnológico Superior de Huauchinango",
+    domicilio: "Avenida Tecnológico No. 80, 5 de Octubre, Huauchinango, Puebla, CP 73160",
+    logo: "/techuachi.jpg",
+  },
+  {
+    nombre: "Instituto Tecnológico Superior de Teposcolula",
+    domicilio: "Avenida Tecnológico #1, San Pedro y San Pablo Teposcolula, Oaxaca, CP 69500",
+    logo: "/logo-itste.jpeg",
+  },
+  {
+    nombre: "Instituto Tecnológico Superior de Zacatecas Occidente",
+    domicilio: "Av. Tecnológico número 2000, Col. Loma La Perla, Sombrerete, Zacatecas, CP 99102",
+    logo: "/LOGOCHICO.png",
+  },
+  {
+    nombre: "Instituto Tecnológico Superior del Álamo",
+    domicilio: "Km 6.5 Carretera Potrero del Llano - Tuxpan, Xoyotitla, Veracruz, CP 92730",
+    logo: "/Escudo ITSAT Uso 2026.png",
+  },
+  {
+    nombre: "Instituto Tecnológico Superior de Naranjos",
+    domicilio: "C. Priv. Guanajuato S/N, Manuel Ávila Camacho, Naranjos, Veracruz, CP 92370",
+    logo: "/OIP.webp",
+  },
+  {
+    nombre: "Instituto Tecnológico Superior de Tlatlauquitepec",
+    domicilio:
+      "Carretera Federal Amozoc-Nautla Km. 122+600 Almoloni Tlatlauquitepec, Pue., Teziutlán-Acajete, 73907 Pue.",
+    logo: "/ACORAZADO LOGO.png",
+  },
+  {
+    nombre: "Tecnológico de Estudios Superiores de Huixquilucan",
+    domicilio: "Barrio El Río s/n, 52773 Magdalena Chichicaspa, Méx.",
+    logo: "/TEScolor.jpg",
   },
 ];
 
@@ -122,10 +147,8 @@ export default function Home() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <GraduationCap className="h-5 w-5 text-primary-foreground" aria-hidden />
-            </div>
+          <Link href="/" className="flex items-center gap-3">
+            <img src="/tecnm-logo.png" alt="TecNM" className="h-10 w-auto object-contain" />
             <span className="text-xl font-bold">SGDE</span>
           </Link>
 
@@ -137,8 +160,8 @@ export default function Home() {
             <a href="#objetivos" className="hover:text-foreground transition-colors">
               Objetivos SGI
             </a>
-            <a href="#funcionalidades" className="hover:text-foreground transition-colors">
-              Funcionalidades
+            <a href="#integrantes" className="hover:text-foreground transition-colors">
+              Integrantes
             </a>
             <a href="#partes-interesadas" className="hover:text-foreground transition-colors">
               Partes Interesadas
@@ -148,9 +171,6 @@ export default function Home() {
           <div className="hidden md:flex items-center gap-4">
             <Link href="/auth/login">
               <Button variant="ghost">Iniciar Sesión</Button>
-            </Link>
-            <Link href="/auth/register">
-              <Button>Registrarse</Button>
             </Link>
           </div>
 
@@ -174,9 +194,6 @@ export default function Home() {
                 <Button variant="ghost" className="w-full justify-start">
                   Iniciar Sesión
                 </Button>
-              </Link>
-              <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
-                <Button className="w-full">Registrarse</Button>
               </Link>
             </div>
           </div>
@@ -208,11 +225,6 @@ export default function Home() {
                   <Button size="lg" className="h-12 px-8 shadow-lg shadow-primary/20">
                     Acceder al Sistema
                     <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-                <Link href="/auth/register">
-                  <Button size="lg" variant="outline" className="h-12 px-8">
-                    Crear cuenta
                   </Button>
                 </Link>
               </div>
@@ -305,41 +317,49 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Funcionalidades Section */}
-        <section id="funcionalidades" className="py-20 md:py-32">
+        {/* Integrantes Section */}
+        <section id="integrantes" className="py-20 md:py-32">
           <div className="container mx-auto px-4">
             <div className="mx-auto max-w-3xl text-center mb-16">
+              <div className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Grupo Multisitios 3
+              </div>
               <h2 className="mb-4 text-3xl md:text-4xl font-bold text-foreground">
-                Funcionalidades del Sistema
+                Institutos Integrantes
               </h2>
               <p className="text-lg text-muted-foreground">
-                Una plataforma completa para gestionar los documentos institucionales de forma
-                eficiente y segura.
+                Los 18 Institutos Tecnológicos Superiores que conforman el Grupo 3 del SGI.
               </p>
             </div>
 
-            <div className="grid gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-4">
-              {features.map((feature, index) => {
-                const Icon = feature.icon;
-                return (
-                  <div
-                    key={index}
-                    className="group flex flex-col items-start rounded-xl border bg-card p-6 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-                  >
-                    <div
-                      className={`mb-4 flex h-12 w-12 items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-110 ${feature.color}`}
-                    >
-                      <Icon className="h-6 w-6" aria-hidden />
-                    </div>
-                    <h3 className="mb-2 text-base font-semibold text-foreground">
-                      {feature.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {feature.description}
+            <div className="mx-auto max-w-5xl grid gap-3 md:grid-cols-2">
+              {integrantes.map((inst, index) => (
+                <div
+                  key={index}
+                  className="flex items-start gap-3 rounded-xl border bg-card px-5 py-4 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="shrink-0 flex items-center justify-center w-12 h-12 mt-0.5">
+                    {inst.logo ? (
+                      <img
+                        src={inst.logo}
+                        alt={inst.nombre}
+                        className="w-12 h-12 object-contain rounded"
+                      />
+                    ) : (
+                      <div className="flex w-8 h-8 items-center justify-center rounded-full bg-primary/10">
+                        <span className="text-xs font-bold text-primary">{index + 1}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{inst.nombre}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 flex items-start gap-1">
+                      <MapPin className="h-3 w-3 mt-0.5 shrink-0" />
+                      {inst.domicilio}
                     </p>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -496,11 +516,6 @@ export default function Home() {
                   <Button size="lg" className="h-12 px-8 shadow-lg shadow-primary/20">
                     Iniciar Sesión
                     <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-                <Link href="/auth/register">
-                  <Button size="lg" variant="outline" className="h-12 px-8">
-                    Crear cuenta
                   </Button>
                 </Link>
               </div>

@@ -456,6 +456,63 @@ export function useDeleteRole() {
 }
 
 // DOCUMENTS HOOKS
+export function useDocument(id: string | null) {
+  return useQuery({
+    queryKey: ["document", id],
+    enabled: !!id,
+    queryFn: () =>
+      fetchApi<{
+        success: boolean;
+        data: {
+          id: string;
+          title: string;
+          description: string | null;
+          fileName: string;
+          fileSize: number;
+          fileUrl: string;
+          status: string;
+          source: string;
+          createdAt: string;
+          user: { name: string | null; email: string };
+          categories: Array<{ id: string; name: string; color: string | null }>;
+          tags: Array<{ id: string; name: string }>;
+        };
+      }>(`/documents/${id}`),
+  });
+}
+
+export function useUpdateDocument() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: {
+        title?: string;
+        description?: string;
+        status?: string;
+        categoryIds?: string[];
+        tagIds?: string[];
+      };
+    }) =>
+      fetchApi(`/documents/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+      queryClient.invalidateQueries({ queryKey: ["document"] });
+      toast.success("Documento actualizado exitosamente");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+}
+
 export function useDocuments(params?: {
   query?: string;
   categoryId?: string;

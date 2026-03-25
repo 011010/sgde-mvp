@@ -58,13 +58,6 @@ export default function LoginPage() {
           </div>
 
           <LoginForm />
-
-          <p className="text-center text-sm text-muted-foreground">
-            ¿No tienes cuenta?{" "}
-            <Link href="/auth/register" className="font-medium text-primary hover:underline">
-              Créala aquí
-            </Link>
-          </p>
         </div>
       </div>
     </div>

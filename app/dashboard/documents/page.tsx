@@ -55,14 +55,16 @@ export default function DocumentsPage() {
   if (error) {
     return (
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold tracking-tight">Documents</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Documentos</h1>
         <Card>
           <CardContent className="p-12 text-center">
             <FileText className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-            <p className="text-red-500 font-medium">Failed to load documents.</p>
-            <p className="text-sm text-muted-foreground mt-1">Please check your connection and try again.</p>
+            <p className="text-red-500 font-medium">Error al cargar documentos.</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Verifica tu conexión e intenta de nuevo.
+            </p>
             <Button variant="outline" className="mt-4" onClick={() => refetch()}>
-              Retry
+              Reintentar
             </Button>
           </CardContent>
         </Card>
@@ -75,12 +77,12 @@ export default function DocumentsPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Documents</h1>
-          <p className="text-muted-foreground">Manage and organize your documents</p>
+          <h1 className="text-3xl font-bold tracking-tight">Documentos</h1>
+          <p className="text-muted-foreground">Gestiona y organiza los documentos del sistema</p>
         </div>
         <Button onClick={() => setIsUploadModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          Upload Document
+          Subir Documento
         </Button>
       </div>
 
@@ -90,7 +92,7 @@ export default function DocumentsPage() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search documents by name..."
+              placeholder="Buscar documentos por nombre..."
               className="pl-10"
               value={searchQuery}
               onChange={(e) => {
@@ -105,7 +107,7 @@ export default function DocumentsPage() {
             className="shrink-0"
           >
             <SlidersHorizontal className="mr-2 h-4 w-4" />
-            Filters
+            Filtros
             {activeFiltersCount > 0 && (
               <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-[10px]">
                 {activeFiltersCount}
@@ -128,7 +130,7 @@ export default function DocumentsPage() {
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="all">Todas las Categorías</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.id}>
                     {cat.name}
@@ -148,7 +150,7 @@ export default function DocumentsPage() {
                 <SelectValue placeholder="All Tags" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Tags</SelectItem>
+                <SelectItem value="all">Todas las Etiquetas</SelectItem>
                 {tags.map((tag) => (
                   <SelectItem key={tag.id} value={tag.id}>
                     {tag.name}
@@ -168,17 +170,22 @@ export default function DocumentsPage() {
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="archived">Archived</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="all">Todos los Estados</SelectItem>
+                <SelectItem value="active">Activo</SelectItem>
+                <SelectItem value="archived">Archivado</SelectItem>
+                <SelectItem value="draft">Borrador</SelectItem>
               </SelectContent>
             </Select>
 
             {activeFiltersCount > 0 && (
-              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearFilters}
+                className="text-muted-foreground"
+              >
                 <X className="mr-1 h-4 w-4" />
-                Clear filters
+                Limpiar filtros
               </Button>
             )}
           </div>
@@ -189,7 +196,7 @@ export default function DocumentsPage() {
           <div className="flex flex-wrap gap-2">
             {selectedCategory && (
               <Badge variant="secondary" className="gap-1 pl-2">
-                Category: {categories.find((c) => c.id === selectedCategory)?.name}
+                Categoría: {categories.find((c) => c.id === selectedCategory)?.name}
                 <button
                   onClick={() => setSelectedCategory(undefined)}
                   className="ml-1 rounded-full hover:bg-muted-foreground/20 p-0.5"
@@ -200,7 +207,7 @@ export default function DocumentsPage() {
             )}
             {selectedTag && (
               <Badge variant="secondary" className="gap-1 pl-2">
-                Tag: {tags.find((t) => t.id === selectedTag)?.name}
+                Etiqueta: {tags.find((t) => t.id === selectedTag)?.name}
                 <button
                   onClick={() => setSelectedTag(undefined)}
                   className="ml-1 rounded-full hover:bg-muted-foreground/20 p-0.5"
@@ -211,7 +218,7 @@ export default function DocumentsPage() {
             )}
             {selectedStatus && (
               <Badge variant="secondary" className="gap-1 pl-2">
-                Status: {selectedStatus}
+                Estado: {selectedStatus}
                 <button
                   onClick={() => setSelectedStatus(undefined)}
                   className="ml-1 rounded-full hover:bg-muted-foreground/20 p-0.5"
@@ -236,12 +243,12 @@ export default function DocumentsPage() {
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
             {pagination.total === 0 ? (
-              "No documents found"
+              "Sin documentos encontrados"
             ) : (
               <>
-                Showing {(pagination.page - 1) * pagination.limit + 1}–
-                {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
-                {pagination.total} documents
+                Mostrando {(pagination.page - 1) * pagination.limit + 1}–
+                {Math.min(pagination.page * pagination.limit, pagination.total)} de{" "}
+                {pagination.total} documentos
               </>
             )}
           </p>
@@ -253,7 +260,7 @@ export default function DocumentsPage() {
                 disabled={pagination.page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
               >
-                Previous
+                Anterior
               </Button>
               <span className="flex items-center px-3 text-sm text-muted-foreground">
                 {pagination.page} / {pagination.totalPages}
@@ -264,7 +271,7 @@ export default function DocumentsPage() {
                 disabled={pagination.page >= pagination.totalPages}
                 onClick={() => setPage((p) => p + 1)}
               >
-                Next
+                Siguiente
               </Button>
             </div>
           )}
