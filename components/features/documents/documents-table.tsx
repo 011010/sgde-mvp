@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { MoreVertical, Download, Edit, Trash2, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDate, formatFileSize } from "@/utils/formatters";
 import { useDeleteDocument } from "@/hooks/use-api";
+import { EditDocumentModal } from "@/components/features/documents/edit-document-modal";
 
 interface Document {
   id: string;
@@ -42,8 +44,23 @@ interface DocumentsTableProps {
   onDelete?: (id: string) => void;
 }
 
+const statusLabels: Record<string, string> = {
+  active: "Activo",
+  archived: "Archivado",
+  draft: "Borrador",
+  deleted: "Eliminado",
+};
+
+const sourceLabels: Record<string, string> = {
+  local: "Local",
+  google_drive: "Google Drive",
+  one_drive: "OneDrive",
+  dropbox: "Dropbox",
+};
+
 export function DocumentsTable({ documents, isLoading, onDelete }: DocumentsTableProps) {
   const deleteDocument = useDeleteDocument();
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
     await deleteDocument.mutateAsync(id);
@@ -55,13 +72,13 @@ export function DocumentsTable({ documents, isLoading, onDelete }: DocumentsTabl
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>File Name</TableHead>
-            <TableHead>Size</TableHead>
-            <TableHead>Uploaded By</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Source</TableHead>
+            <TableHead>Título</TableHead>
+            <TableHead>Archivo</TableHead>
+            <TableHead>Tamaño</TableHead>
+            <TableHead>Subido por</TableHead>
+            <TableHead>Fecha</TableHead>
+            <TableHead>Estado</TableHead>
+            <TableHead>Fuente</TableHead>
             <TableHead className="w-[50px]"></TableHead>
           </TableRow>
         </TableHeader>
@@ -98,87 +115,102 @@ export function DocumentsTable({ documents, isLoading, onDelete }: DocumentsTabl
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Title</TableHead>
-          <TableHead>File Name</TableHead>
-          <TableHead>Size</TableHead>
-          <TableHead>Uploaded By</TableHead>
-          <TableHead>Date</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Source</TableHead>
-          <TableHead className="w-[50px]"></TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {documents.length === 0 ? (
+    <>
+      <Table>
+        <TableHeader>
           <TableRow>
-            <TableCell colSpan={8} className="text-center text-muted-foreground">
-              No documents found
-            </TableCell>
+            <TableHead>Título</TableHead>
+            <TableHead>Archivo</TableHead>
+            <TableHead>Tamaño</TableHead>
+            <TableHead>Subido por</TableHead>
+            <TableHead>Fecha</TableHead>
+            <TableHead>Estado</TableHead>
+            <TableHead>Fuente</TableHead>
+            <TableHead className="w-[50px]"></TableHead>
           </TableRow>
-        ) : (
-          documents.map((document) => (
-            <TableRow key={document.id}>
-              <TableCell className="font-medium">{document.title}</TableCell>
-              <TableCell className="text-muted-foreground">{document.fileName}</TableCell>
-              <TableCell>{formatFileSize(document.fileSize)}</TableCell>
-              <TableCell>{document.user.name || document.user.email}</TableCell>
-              <TableCell>{formatDate(document.createdAt, "PPP")}</TableCell>
-              <TableCell>
-                <Badge
-                  variant={
-                    document.status === "active"
-                      ? "default"
-                      : document.status === "archived"
-                        ? "secondary"
-                        : "outline"
-                  }
-                >
-                  {document.status}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <Badge variant="outline">{document.source.replace("_", " ")}</Badge>
-              </TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                      <a href={document.fileUrl} download target="_blank" rel="noopener noreferrer">
-                        <Download className="mr-2 h-4 w-4" />
-                        Download
-                      </a>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Edit className="mr-2 h-4 w-4" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="text-destructive"
-                      onClick={() => handleDelete(document.id)}
-                      disabled={deleteDocument.isPending}
-                    >
-                      {deleteDocument.isPending ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="mr-2 h-4 w-4" />
-                      )}
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+        </TableHeader>
+        <TableBody>
+          {documents.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center text-muted-foreground py-12">
+                Sin documentos encontrados
               </TableCell>
             </TableRow>
-          ))
-        )}
-      </TableBody>
-    </Table>
+          ) : (
+            documents.map((document) => (
+              <TableRow key={document.id}>
+                <TableCell className="font-medium">{document.title}</TableCell>
+                <TableCell className="text-muted-foreground text-sm">{document.fileName}</TableCell>
+                <TableCell>{formatFileSize(document.fileSize)}</TableCell>
+                <TableCell>{document.user.name || document.user.email}</TableCell>
+                <TableCell>{formatDate(document.createdAt, "PPP")}</TableCell>
+                <TableCell>
+                  <Badge
+                    variant={
+                      document.status === "active"
+                        ? "default"
+                        : document.status === "archived"
+                          ? "secondary"
+                          : "outline"
+                    }
+                  >
+                    {statusLabels[document.status] || document.status}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">
+                    {sourceLabels[document.source] || document.source.replace("_", " ")}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <a
+                          href={document.fileUrl}
+                          download
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Download className="mr-2 h-4 w-4" />
+                          Descargar
+                        </a>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setEditingId(document.id)}>
+                        <Edit className="mr-2 h-4 w-4" />
+                        Editar
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-destructive"
+                        onClick={() => handleDelete(document.id)}
+                        disabled={deleteDocument.isPending}
+                      >
+                        {deleteDocument.isPending ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="mr-2 h-4 w-4" />
+                        )}
+                        Eliminar
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+
+      <EditDocumentModal
+        isOpen={!!editingId}
+        onClose={() => setEditingId(null)}
+        documentId={editingId}
+      />
+    </>
   );
 }
