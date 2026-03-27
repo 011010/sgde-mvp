@@ -14,8 +14,16 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import type { OurFileRouter } from "@/lib/infrastructure/storage/uploadthing";
+import { useFolders } from "@/hooks/use-api";
 
 interface UploadedFile {
   name: string;
@@ -28,13 +36,23 @@ interface DocumentUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  defaultFolderId?: string;
 }
 
-export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUploadModalProps) {
+export function DocumentUploadModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  defaultFolderId,
+}: DocumentUploadModalProps) {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [folderId, setFolderId] = useState<string>(defaultFolderId || "none");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { data: foldersData } = useFolders();
+  const folders = foldersData?.data || [];
 
   const handleUploadComplete = (files: UploadedFile[]) => {
     setUploadedFiles((prev) => [...prev, ...files]);
@@ -75,6 +93,7 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
             mimeType: getMimeType(file.name),
             fileUrl: file.url,
             source: "local",
+            folderId: folderId !== "none" ? folderId : undefined,
           }),
         });
 
@@ -93,6 +112,7 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
       setUploadedFiles([]);
       setTitle("");
       setDescription("");
+      setFolderId(defaultFolderId || "none");
       onClose();
       onSuccess?.();
     } catch (error) {
@@ -107,6 +127,7 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
       setUploadedFiles([]);
       setTitle("");
       setDescription("");
+      setFolderId(defaultFolderId || "none");
       onClose();
     }
   };
@@ -246,6 +267,25 @@ export function DocumentUploadModal({ isOpen, onClose, onSuccess }: DocumentUplo
               disabled={isSubmitting}
             />
           </div>
+
+          {folders.length > 0 && (
+            <div className="space-y-2">
+              <Label>Carpeta</Label>
+              <Select value={folderId} onValueChange={setFolderId} disabled={isSubmitting}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sin carpeta" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Sin carpeta</SelectItem>
+                  {folders.map((f) => (
+                    <SelectItem key={f.id} value={f.id}>
+                      {f.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
 
         <DialogFooter>

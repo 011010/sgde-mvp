@@ -513,12 +513,70 @@ export function useUpdateDocument() {
   });
 }
 
+// FOLDERS HOOKS
+export function useFolders() {
+  return useQuery({
+    queryKey: ["folders"],
+    queryFn: () =>
+      fetchApi<{
+        success: boolean;
+        data: Array<{
+          id: string;
+          name: string;
+          description: string | null;
+          createdAt: string;
+          _count: { documents: number };
+        }>;
+      }>("/folders"),
+  });
+}
+
+export function useCreateFolder() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { name: string; description?: string }) =>
+      fetchApi("/folders", { method: "POST", body: JSON.stringify(data) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["folders"] });
+      toast.success("Carpeta creada exitosamente");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+}
+
+export function useUpdateFolder() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: { name?: string; description?: string } }) =>
+      fetchApi(`/folders/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["folders"] });
+      toast.success("Carpeta actualizada exitosamente");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+}
+
+export function useDeleteFolder() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => fetchApi(`/folders/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["folders"] });
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+      toast.success("Carpeta eliminada exitosamente");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+}
+
 export function useDocuments(params?: {
   query?: string;
   categoryId?: string;
   tagId?: string;
   source?: string;
   status?: string;
+  folderId?: string;
   page?: number;
   limit?: number;
 }) {
@@ -555,6 +613,7 @@ export function useDocuments(params?: {
           ...(params?.tagId && { tagId: params.tagId }),
           ...(params?.source && { source: params.source }),
           ...(params?.status && { status: params.status }),
+          ...(params?.folderId !== undefined && { folderId: params.folderId }),
           ...(params?.page && { page: params.page.toString() }),
           ...(params?.limit && { limit: params.limit.toString() }),
         }).toString()}`

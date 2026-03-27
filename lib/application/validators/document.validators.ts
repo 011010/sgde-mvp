@@ -16,6 +16,7 @@ export const createDocumentSchema = z.object({
   ]),
   categoryIds: z.array(z.string()).optional(),
   tagIds: z.array(z.string()).optional(),
+  folderId: z.string().optional(),
 });
 
 export const updateDocumentSchema = z.object({
@@ -26,6 +27,7 @@ export const updateDocumentSchema = z.object({
     .optional(),
   categoryIds: z.array(z.string()).optional(),
   tagIds: z.array(z.string()).optional(),
+  folderId: z.string().nullable().optional(),
 });
 
 export const shareDocumentSchema = z.object({
@@ -51,6 +53,7 @@ export const searchDocumentsSchema = z.object({
     .enum([DOCUMENT_STATUS.ACTIVE, DOCUMENT_STATUS.ARCHIVED, DOCUMENT_STATUS.DELETED])
     .optional(),
   uploadedBy: z.string().optional(),
+  folderId: z.string().optional(),
   page: z.number().positive().default(1),
   limit: z.number().positive().max(100).default(20),
   sortBy: z.enum(["createdAt", "updatedAt", "title", "fileSize"]).default("createdAt"),

@@ -30,34 +30,30 @@ export function DeleteTagModal({ isOpen, onClose, tag }: DeleteTagModalProps) {
     onClose();
   };
 
-  const hasDocuments = (tag?._count?.documents || 0) > 0;
+  const docCount = tag?._count?.documents || 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Tag</DialogTitle>
+          <DialogTitle>Eliminar Etiqueta</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete the tag &quot;{tag?.name}&quot;?
-            {hasDocuments && (
-              <span className="mt-2 block text-red-500">
-                Warning: This tag has {tag?._count?.documents} document(s) associated with it. You
-                cannot delete a tag with associated documents.
+            ¿Estás seguro de que deseas eliminar la etiqueta &quot;{tag?.name}&quot;?
+            {docCount > 0 && (
+              <span className="mt-2 block text-amber-600">
+                Esta etiqueta tiene {docCount} documento(s) asociado(s). Al eliminarla, se
+                desvinculará de esos documentos.
               </span>
             )}
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            Cancelar
           </Button>
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={deleteTag.isPending || hasDocuments}
-          >
+          <Button variant="destructive" onClick={handleDelete} disabled={deleteTag.isPending}>
             {deleteTag.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Delete Tag
+            Eliminar Etiqueta
           </Button>
         </div>
       </DialogContent>
