@@ -20,6 +20,7 @@ export class DocumentService {
         fileUrl: data.fileUrl,
         source: data.source,
         uploadedBy: userId,
+        folderId: data.folderId || null,
         categories: data.categoryIds
           ? {
               create: data.categoryIds.map((categoryId) => ({
@@ -91,6 +92,7 @@ export class DocumentService {
         title: data.title,
         description: data.description,
         status: data.status,
+        folderId: data.folderId !== undefined ? data.folderId : undefined,
         categories: data.categoryIds
           ? {
               deleteMany: {},
@@ -229,6 +231,7 @@ export class DocumentService {
       tags?: object;
       source?: string;
       uploadedBy?: string;
+      folderId?: string | null;
     } = {
       status: filters.status || DOCUMENT_STATUS.ACTIVE,
     };
@@ -263,6 +266,10 @@ export class DocumentService {
 
     if (filters.uploadedBy) {
       where.uploadedBy = filters.uploadedBy;
+    }
+
+    if (filters.folderId !== undefined) {
+      where.folderId = filters.folderId || null;
     }
 
     const skip = (filters.page - 1) * filters.limit;

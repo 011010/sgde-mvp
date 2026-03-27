@@ -119,6 +119,18 @@ model UserRole {
   @@map("user_roles")
 }
 
+model Folder {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  documents   Document[]
+
+  @@map("folders")
+}
+
 model Document {
   id          String   @id @default(cuid())
   title       String
@@ -130,10 +142,12 @@ model Document {
   source      String   @default("local")
   status      String   @default("active")
   uploadedBy  String
+  folderId    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   user       User              @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+  folder     Folder?           @relation(fields: [folderId], references: [id], onDelete: SetNull)
   categories DocumentCategory[]
   tags       DocumentTag[]
   versions   DocumentVersion[]
@@ -142,6 +156,7 @@ model Document {
   @@index([uploadedBy])
   @@index([status])
   @@index([source])
+  @@index([folderId])
   @@map("documents")
 }
 

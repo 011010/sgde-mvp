@@ -161,10 +161,6 @@ export class TagService {
       throw new Error("Tag not found");
     }
 
-    if (tag._count.documents > 0) {
-      throw new Error("Cannot delete tag with associated documents");
-    }
-
     await prisma.tag.delete({
       where: { id: tagId },
     });
