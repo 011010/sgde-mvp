@@ -149,13 +149,16 @@ export default function Home() {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-3">
             <img src="/tecnm-logo.png" alt="TecNM" className="h-10 w-auto object-contain" />
-            <span className="text-xl font-bold">SGDE</span>
+            <span className="text-xl font-bold">SGDI</span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
             <a href="#mision" className="hover:text-foreground transition-colors">
               Misión
+            </a>
+            <a href="#vision" className="hover:text-foreground transition-colors">
+              Visión
             </a>
             <a href="#objetivos" className="hover:text-foreground transition-colors">
               Objetivos SGI
@@ -213,7 +216,7 @@ export default function Home() {
                 Sistema de Gestión Integral — Grupo Multisitios 3
               </div>
               <h1 className="mb-6 text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
-                Sistema de Gestión <span className="text-primary">Documental Educativa</span>
+                Sistema de Gestión <span className="text-primary">Integral (SGDI)</span>
               </h1>
               <p className="mx-auto mb-10 max-w-2xl text-lg md:text-xl text-muted-foreground leading-relaxed">
                 Plataforma institucional para la gestión, organización y control de documentos del
@@ -237,7 +240,7 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
               {[
-                { value: "5", label: "Institutos Tecnológicos" },
+                { value: "18", label: "Institutos Tecnológicos" },
                 { value: "100%", label: "Normatividad SGI" },
                 { value: "ISO", label: "Gestión de Calidad" },
                 { value: "Grupo 3", label: "Multisitios" },
@@ -261,13 +264,36 @@ export default function Home() {
                   <GraduationCap className="h-8 w-8 text-primary" />
                 </div>
                 <div className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  Misión Institucional
+                  Misión
                 </div>
                 <blockquote className="text-xl md:text-2xl font-medium text-foreground leading-relaxed">
                   &ldquo;Ser una Institución de Educación Superior Tecnológica, comprometida en la
                   formación de profesionistas competitivos y capaces de responder a las demandas de
                   miras del entorno, a través de programas educativos de calidad acreditados, con
                   compromiso y responsabilidad Social y Humana de la Sociedad.&rdquo;
+                </blockquote>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Visión Section */}
+        <section id="vision" className="border-t py-20 md:py-28">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-4xl">
+              <div className="rounded-2xl border bg-card p-10 md:p-14 shadow-sm text-center relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-primary to-indigo-500" />
+                <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-500/10 mx-auto">
+                  <Target className="h-8 w-8 text-indigo-600" />
+                </div>
+                <div className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  Visión
+                </div>
+                <blockquote className="text-xl md:text-2xl font-medium text-foreground leading-relaxed">
+                  &ldquo;Ser una Institución de Educación Superior Tecnológica de vanguardia que
+                  garantice una formación profesional de calidad, competencia y pertinencia,
+                  sustentada en sus programas educativos que coadyuven al desarrollo sustentable en
+                  los ámbitos Regional, Estatal y Nacional.&rdquo;
                 </blockquote>
               </div>
             </div>
