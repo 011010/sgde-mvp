@@ -115,6 +115,45 @@ export const ROLE_PERMISSIONS_MAP: Record<string, string[]> = {
   ],
 };
 
+export const MODULE_VISIBILITY: Record<string, string[]> = {
+  "/dashboard": [
+    DEFAULT_ROLES.SUPER_ADMIN,
+    DEFAULT_ROLES.ADMIN,
+    DEFAULT_ROLES.COORDINATOR,
+    DEFAULT_ROLES.TEACHER,
+    DEFAULT_ROLES.STUDENT,
+  ],
+  "/dashboard/documents": [
+    DEFAULT_ROLES.SUPER_ADMIN,
+    DEFAULT_ROLES.ADMIN,
+    DEFAULT_ROLES.COORDINATOR,
+    DEFAULT_ROLES.TEACHER,
+    DEFAULT_ROLES.STUDENT,
+  ],
+  "/dashboard/categories": [
+    DEFAULT_ROLES.SUPER_ADMIN,
+    DEFAULT_ROLES.ADMIN,
+    DEFAULT_ROLES.COORDINATOR,
+  ],
+  "/dashboard/tags": [DEFAULT_ROLES.SUPER_ADMIN, DEFAULT_ROLES.ADMIN],
+  "/dashboard/users": [DEFAULT_ROLES.SUPER_ADMIN, DEFAULT_ROLES.ADMIN],
+  "/dashboard/roles": [DEFAULT_ROLES.SUPER_ADMIN, DEFAULT_ROLES.ADMIN],
+  "/dashboard/audit-logs": [DEFAULT_ROLES.SUPER_ADMIN, DEFAULT_ROLES.ADMIN],
+  "/dashboard/settings": [
+    DEFAULT_ROLES.SUPER_ADMIN,
+    DEFAULT_ROLES.ADMIN,
+    DEFAULT_ROLES.COORDINATOR,
+    DEFAULT_ROLES.TEACHER,
+    DEFAULT_ROLES.STUDENT,
+  ],
+};
+
+export function canAccessModule(roles: string[], pathname: string): boolean {
+  const allowedRoles = MODULE_VISIBILITY[pathname];
+  if (!allowedRoles) return true;
+  return roles.some((role) => allowedRoles.includes(role));
+}
+
 export type Resource = (typeof RESOURCES)[keyof typeof RESOURCES];
 export type Action = (typeof ACTIONS)[keyof typeof ACTIONS];
 export type Role = (typeof DEFAULT_ROLES)[keyof typeof DEFAULT_ROLES];
