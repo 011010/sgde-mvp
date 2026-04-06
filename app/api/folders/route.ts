@@ -7,16 +7,19 @@ import {
   handleApiError,
 } from "@/utils/api-response";
 import { requireAuth } from "@/lib/infrastructure/auth/rbac";
-import { z } from "zod";
+import { createFolderSchema } from "@/lib/application/validators/folder.validators";
 
-const createFolderSchema = z.object({
-  name: z.string().min(1).max(100),
-  description: z.string().max(500).optional(),
-});
-
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await requireAuth();
+    const { searchParams } = new URL(request.url);
+    const tree = searchParams.get("tree");
+
+    if (tree === "true") {
+      const folders = await folderService.getFolderTree();
+      return successResponse(folders);
+    }
+
     const folders = await folderService.getFolders();
     return successResponse(folders);
   } catch (error) {

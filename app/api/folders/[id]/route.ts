@@ -7,12 +7,7 @@ import {
   handleApiError,
 } from "@/utils/api-response";
 import { requireAuth } from "@/lib/infrastructure/auth/rbac";
-import { z } from "zod";
-
-const updateFolderSchema = z.object({
-  name: z.string().min(1).max(100).optional(),
-  description: z.string().max(500).optional(),
-});
+import { updateFolderSchema } from "@/lib/application/validators/folder.validators";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
