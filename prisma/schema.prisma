@@ -123,11 +123,15 @@ model Folder {
   id          String   @id @default(cuid())
   name        String
   description String?
+  parentId    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  documents   Document[]
+  parent   Folder?  @relation("FolderHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children Folder[] @relation("FolderHierarchy")
+  documents Document[]
 
+  @@index([parentId])
   @@map("folders")
 }
 

@@ -48,20 +48,25 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/sgde_dev?schema=public&connection_limit=10&pool_timeout=20
-      NEXTAUTH_URL: http://localhost:3000
+      DATABASE_URL_UNPOOLED: postgresql://postgres:postgres@postgres:5432/sgde_dev?schema=public
+      NEXTAUTH_URL: http://localhost:3001
       NEXTAUTH_SECRET: development-secret-change-in-production-32chars-min
       NODE_ENV: development
       UPLOADTHING_TOKEN: ${UPLOADTHING_TOKEN:-}
       WATCHPACK_POLLING: "true"
     ports:
-      - "3000:3000"
+      - "3001:3000"
     volumes:
       - .:/app:cached
       - /app/node_modules
       - /app/.next
       - /app/.husky
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
