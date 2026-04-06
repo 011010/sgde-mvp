@@ -56,7 +56,7 @@ const adminNavigation = [
 export function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const userRoles = (session?.user as { roles?: string[] })?.roles || [];
+  const userRoles = session?.user?.roles || [];
 
   const canAccess = (href: string): boolean => {
     const allowedRoles = MODULE_VISIBILITY[href];
@@ -109,7 +109,7 @@ export function Sidebar() {
 
             return (
               <Link
-                key={item.name}
+                key={item.href}
                 href={item.href}
                 className={cn(
                   "flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
@@ -147,7 +147,7 @@ export function Sidebar() {
 
                 return (
                   <Link
-                    key={item.name}
+                    key={item.href}
                     href={item.href}
                     className={cn(
                       "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
@@ -164,34 +164,38 @@ export function Sidebar() {
           </>
         )}
 
-        <div className="mt-6 mb-4 px-3">
-          <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
-            Preferencias
-          </p>
-        </div>
+        {preferencesNavigation.some((item) => canAccess(item.href)) && (
+          <>
+            <div className="mt-6 mb-4 px-3">
+              <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+                Preferencias
+              </p>
+            </div>
 
-        {preferencesNavigation
-          .filter((item) => canAccess(item.href))
-          .map((item) => {
-            const active = isActive(item.href);
-            const Icon = item.icon;
+            {preferencesNavigation
+              .filter((item) => canAccess(item.href))
+              .map((item) => {
+                const active = isActive(item.href);
+                const Icon = item.icon;
 
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                  active
-                    ? "bg-white/15 text-white shadow-sm"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                )}
-              >
-                <Icon className="h-5 w-5 mr-3" />
-                <span>{item.name}</span>
-              </Link>
-            );
-          })}
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                      active
+                        ? "bg-white/15 text-white shadow-sm"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    )}
+                  >
+                    <Icon className="h-5 w-5 mr-3" />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
+          </>
+        )}
       </nav>
 
       {/* User Footer */}
