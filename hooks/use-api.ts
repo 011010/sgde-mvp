@@ -570,6 +570,32 @@ export function useDeleteFolder() {
   });
 }
 
+export function useFolderTree() {
+  return useQuery({
+    queryKey: ["folders", "tree"],
+    queryFn: async () => {
+      const response = await fetch("/api/folders?tree=true");
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error);
+      return result.data as import("@/lib/application/services/folder.service").FolderTreeNode[];
+    },
+  });
+}
+
+export function useFolderPath(folderId: string | null) {
+  return useQuery({
+    queryKey: ["folders", folderId, "path"],
+    queryFn: async () => {
+      if (!folderId) return [];
+      const response = await fetch(`/api/folders/${folderId}/path`);
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error);
+      return result.data as Array<{ id: string; name: string }>;
+    },
+    enabled: !!folderId,
+  });
+}
+
 export function useDocuments(params?: {
   query?: string;
   categoryId?: string;
