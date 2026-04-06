@@ -1,5 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { MODULE_VISIBILITY } from "@/config/permissions.config";
+
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const payload = parts[1];
+    const decoded = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+    return decoded;
+  } catch {
+    return null;
+  }
+}
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -36,6 +49,25 @@ export function middleware(request: NextRequest) {
   // Redirect authenticated users away from auth pages
   if (isLoggedIn && isAuthRoute) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  // Role-based route protection for dashboard
+  if (isLoggedIn && pathname.startsWith("/dashboard")) {
+    const payload = decodeJwtPayload(authToken);
+    const userRoles = (payload?.roles as string[]) || [];
+
+    // Find exact match or longest prefix match
+    const matchedRoute = Object.keys(MODULE_VISIBILITY).find(
+      (route) => pathname === route || pathname.startsWith(route + "/")
+    );
+
+    if (matchedRoute) {
+      const allowedRoles = MODULE_VISIBILITY[matchedRoute];
+      const hasAccess = userRoles.some((role) => allowedRoles.includes(role));
+      if (!hasAccess) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
   }
 
   return NextResponse.next();
