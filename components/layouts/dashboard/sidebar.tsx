@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { useSession, signOut } from "next-auth/react";
+import { MODULE_VISIBILITY } from "@/config/permissions.config";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const mainNavigation = [
@@ -55,6 +56,13 @@ const adminNavigation = [
 export function Sidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const userRoles = (session?.user as { roles?: string[] })?.roles || [];
+
+  const canAccess = (href: string): boolean => {
+    const allowedRoles = MODULE_VISIBILITY[href];
+    if (!allowedRoles) return true;
+    return userRoles.some((role) => allowedRoles.includes(role));
+  };
 
   const isActive = (href: string) => {
     if (href === "/dashboard") {
@@ -93,60 +101,68 @@ export function Sidebar() {
           </p>
         </div>
 
-        {mainNavigation.map((item) => {
-          const active = isActive(item.href);
-          const Icon = item.icon;
+        {mainNavigation
+          .filter((item) => canAccess(item.href))
+          .map((item) => {
+            const active = isActive(item.href);
+            const Icon = item.icon;
 
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                active
-                  ? "bg-white/15 text-white shadow-sm"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <Icon className="h-5 w-5" />
-                <span>{item.name}</span>
-              </div>
-              {item.badge && (
-                <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold text-white">
-                  {item.badge}
-                </span>
-              )}
-            </Link>
-          );
-        })}
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  "flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                  active
+                    ? "bg-white/15 text-white shadow-sm"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <Icon className="h-5 w-5" />
+                  <span>{item.name}</span>
+                </div>
+                {item.badge && (
+                  <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold text-white">
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
 
-        <div className="mt-6 mb-2 px-3">
-          <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
-            Administración
-          </p>
-        </div>
+        {adminNavigation.some((item) => canAccess(item.href)) && (
+          <>
+            <div className="mt-6 mb-2 px-3">
+              <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+                Administración
+              </p>
+            </div>
 
-        {adminNavigation.map((item) => {
-          const active = isActive(item.href);
-          const Icon = item.icon;
+            {adminNavigation
+              .filter((item) => canAccess(item.href))
+              .map((item) => {
+                const active = isActive(item.href);
+                const Icon = item.icon;
 
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                active
-                  ? "bg-white/15 text-white shadow-sm"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              )}
-            >
-              <Icon className="h-5 w-5 mr-3" />
-              <span>{item.name}</span>
-            </Link>
-          );
-        })}
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={cn(
+                      "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                      active
+                        ? "bg-white/15 text-white shadow-sm"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    )}
+                  >
+                    <Icon className="h-5 w-5 mr-3" />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
+          </>
+        )}
 
         <div className="mt-6 mb-4 px-3">
           <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
@@ -154,26 +170,28 @@ export function Sidebar() {
           </p>
         </div>
 
-        {preferencesNavigation.map((item) => {
-          const active = isActive(item.href);
-          const Icon = item.icon;
+        {preferencesNavigation
+          .filter((item) => canAccess(item.href))
+          .map((item) => {
+            const active = isActive(item.href);
+            const Icon = item.icon;
 
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                active
-                  ? "bg-white/15 text-white shadow-sm"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              )}
-            >
-              <Icon className="h-5 w-5 mr-3" />
-              <span>{item.name}</span>
-            </Link>
-          );
-        })}
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  "flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                  active
+                    ? "bg-white/15 text-white shadow-sm"
+                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                )}
+              >
+                <Icon className="h-5 w-5 mr-3" />
+                <span>{item.name}</span>
+              </Link>
+            );
+          })}
       </nav>
 
       {/* User Footer */}
