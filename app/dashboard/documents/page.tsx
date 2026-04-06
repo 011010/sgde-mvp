@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import {
   Plus,
   Search,
@@ -15,6 +15,8 @@ import {
   Pencil,
   Trash2,
   MoreVertical,
+  ChevronRight,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,9 +54,124 @@ import {
   useCreateFolder,
   useUpdateFolder,
   useDeleteFolder,
+  useFolderTree,
+  useFolderPath,
 } from "@/hooks/use-api";
+import { cn } from "@/utils/cn";
+import type { FolderTreeNode } from "@/lib/application/services/folder.service";
 
 type ViewMode = "list" | "grid";
+
+function FolderTreeItem({
+  folder,
+  level,
+  selectedFolderId,
+  onSelect,
+  expandedFolders,
+  onToggle,
+  onEdit,
+  onDelete,
+}: {
+  folder: FolderTreeNode;
+  level: number;
+  selectedFolderId: string | undefined;
+  onSelect: (id: string | undefined) => void;
+  expandedFolders: Set<string>;
+  onToggle: (id: string) => void;
+  onEdit: (folder: { id: string; name: string; description: string | null }) => void;
+  onDelete: (folder: { id: string; name: string }) => void;
+}) {
+  const isExpanded = expandedFolders.has(folder.id);
+  const isSelected = selectedFolderId === folder.id;
+  const hasChildren = folder.children.length > 0;
+
+  return (
+    <div>
+      <div className="group flex items-center gap-1">
+        <button
+          onClick={() => {
+            onSelect(folder.id);
+          }}
+          className={cn(
+            "flex-1 flex items-center gap-1 rounded-md px-2 py-1.5 text-sm transition-colors min-w-0",
+            isSelected ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+          )}
+          style={{ paddingLeft: `${(level + 1) * 12 + 8}px` }}
+        >
+          {hasChildren ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggle(folder.id);
+              }}
+              className="p-0.5 hover:bg-muted-foreground/10 rounded shrink-0"
+            >
+              {isExpanded ? (
+                <ChevronDown className="h-3.5 w-3.5" />
+              ) : (
+                <ChevronRight className="h-3.5 w-3.5" />
+              )}
+            </button>
+          ) : (
+            <span className="w-5 shrink-0" />
+          )}
+          {isSelected ? (
+            <FolderOpen className="h-4 w-4 shrink-0" />
+          ) : (
+            <Folder className="h-4 w-4 shrink-0" />
+          )}
+          <span className="flex-1 text-left truncate">{folder.name}</span>
+          <span className="text-xs opacity-70">{folder.documentCount}</span>
+        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 opacity-0 group-hover:opacity-100 shrink-0"
+            >
+              <MoreVertical className="h-3.5 w-3.5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() =>
+                onEdit({ id: folder.id, name: folder.name, description: folder.description })
+              }
+            >
+              <Pencil className="mr-2 h-4 w-4" />
+              Renombrar
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-destructive"
+              onClick={() => onDelete({ id: folder.id, name: folder.name })}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Eliminar
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      {isExpanded && hasChildren && (
+        <div>
+          {folder.children.map((child) => (
+            <FolderTreeItem
+              key={child.id}
+              folder={child}
+              level={level + 1}
+              selectedFolderId={selectedFolderId}
+              onSelect={onSelect}
+              expandedFolders={expandedFolders}
+              onToggle={onToggle}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function DocumentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -81,6 +198,20 @@ export default function DocumentsPage() {
     name?: string;
   }>({ open: false });
 
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+
+  const toggleFolder = (id: string) => {
+    setExpandedFolders((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
   const { data, isLoading, error, refetch } = useDocuments({
     query: searchQuery,
     page,
@@ -94,6 +225,8 @@ export default function DocumentsPage() {
   const { data: categoriesData } = useCategories({ limit: 100, page: 1 });
   const { data: tagsData } = useTags({ limit: 100, page: 1 });
   const { data: foldersData, refetch: refetchFolders } = useFolders();
+  const { data: folderTree = [] } = useFolderTree();
+  const { data: folderPath = [] } = useFolderPath(selectedFolderId ?? null);
 
   const createFolder = useCreateFolder();
   const updateFolder = useUpdateFolder();
@@ -103,7 +236,7 @@ export default function DocumentsPage() {
   const pagination = data?.data?.pagination;
   const categories = categoriesData?.data?.categories || [];
   const tags = tagsData?.data?.tags || [];
-  const folders = foldersData?.data || [];
+  const _folders = foldersData?.data || [];
 
   const activeFiltersCount = [selectedCategory, selectedTag, selectedStatus].filter(Boolean).length;
 
@@ -138,8 +271,6 @@ export default function DocumentsPage() {
     setDeleteFolderConfirm({ open: false });
     refetchFolders();
   };
-
-  const selectedFolder = folders.find((f) => f.id === selectedFolderId);
 
   if (error) {
     return (
@@ -200,89 +331,73 @@ export default function DocumentsPage() {
               setSelectedFolderId(undefined);
               setPage(1);
             }}
-            className={`w-full flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${
+            className={cn(
+              "w-full flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
               selectedFolderId === undefined
                 ? "bg-primary text-primary-foreground"
                 : "hover:bg-muted"
-            }`}
+            )}
           >
             <FileText className="h-4 w-4 shrink-0" />
             <span className="flex-1 text-left truncate">Todos</span>
             <span className="text-xs opacity-70">{pagination?.total ?? ""}</span>
           </button>
 
-          {/* Folders list */}
-          {folders.map((folder) => (
-            <div key={folder.id} className="group flex items-center gap-1">
-              <button
-                onClick={() => {
-                  setSelectedFolderId(folder.id);
-                  setPage(1);
-                }}
-                className={`flex-1 flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors min-w-0 ${
-                  selectedFolderId === folder.id
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
-                }`}
-              >
-                {selectedFolderId === folder.id ? (
-                  <FolderOpen className="h-4 w-4 shrink-0" />
-                ) : (
-                  <Folder className="h-4 w-4 shrink-0" />
-                )}
-                <span className="flex-1 text-left truncate">{folder.name}</span>
-                <span className="text-xs opacity-70">{folder._count.documents}</span>
-              </button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 opacity-0 group-hover:opacity-100 shrink-0"
-                  >
-                    <MoreVertical className="h-3.5 w-3.5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() =>
-                      setFolderModal({
-                        open: true,
-                        mode: "edit",
-                        id: folder.id,
-                        name: folder.name,
-                        description: folder.description || "",
-                      })
-                    }
-                  >
-                    <Pencil className="mr-2 h-4 w-4" />
-                    Renombrar
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="text-destructive"
-                    onClick={() =>
-                      setDeleteFolderConfirm({ open: true, id: folder.id, name: folder.name })
-                    }
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Eliminar
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+          {/* Folder Tree */}
+          {folderTree.map((folder) => (
+            <FolderTreeItem
+              key={folder.id}
+              folder={folder}
+              level={0}
+              selectedFolderId={selectedFolderId}
+              onSelect={(id) => {
+                setSelectedFolderId(id);
+                setPage(1);
+              }}
+              expandedFolders={expandedFolders}
+              onToggle={toggleFolder}
+              onEdit={(f) =>
+                setFolderModal({
+                  open: true,
+                  mode: "edit",
+                  id: f.id,
+                  name: f.name,
+                  description: f.description || "",
+                })
+              }
+              onDelete={(f) => setDeleteFolderConfirm({ open: true, id: f.id, name: f.name })}
+            />
           ))}
         </div>
 
         {/* Main Content */}
         <div className="flex-1 min-w-0 space-y-4">
-          {/* Breadcrumb when folder selected */}
-          {selectedFolder && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <button onClick={() => setSelectedFolderId(undefined)} className="hover:underline">
+          {/* Breadcrumb */}
+          {folderPath.length > 0 && (
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <button
+                onClick={() => setSelectedFolderId(undefined)}
+                className="hover:text-foreground transition-colors"
+              >
                 Todos
               </button>
-              <span>/</span>
-              <span className="font-medium text-foreground">{selectedFolder.name}</span>
+              {folderPath.map((segment, index) => (
+                <Fragment key={segment.id}>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                  <button
+                    onClick={() => {
+                      setSelectedFolderId(segment.id);
+                      setPage(1);
+                    }}
+                    className={cn(
+                      "hover:text-foreground transition-colors",
+                      index === folderPath.length - 1 && "text-foreground font-medium"
+                    )}
+                  >
+                    {segment.name}
+                  </button>
+                </Fragment>
+              ))}
             </div>
           )}
 
