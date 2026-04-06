@@ -51,13 +51,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Role-based route protection for dashboard
+  // Role-based route protection for dashboard (soft guard - JWT not re-verified)
   if (isLoggedIn && pathname.startsWith("/dashboard")) {
     const payload = decodeJwtPayload(authToken);
-    const userRoles = (payload?.roles as string[]) || [];
+    const rawRoles = payload?.roles;
+    const userRoles = Array.isArray(rawRoles)
+      ? rawRoles.filter((r): r is string => typeof r === "string")
+      : [];
 
-    // Find exact match or longest prefix match
-    const matchedRoute = Object.keys(MODULE_VISIBILITY).find(
+    // Longest prefix match (sort routes by length descending)
+    const sortedRoutes = Object.keys(MODULE_VISIBILITY).sort((a, b) => b.length - a.length);
+    const matchedRoute = sortedRoutes.find(
       (route) => pathname === route || pathname.startsWith(route + "/")
     );
 
