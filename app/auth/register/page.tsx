@@ -11,13 +11,13 @@ export default function RegisterPage() {
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-foreground/20">
             <GraduationCap className="h-6 w-6" />
           </div>
-          <span className="text-2xl font-bold">SGDE</span>
+          <span className="text-2xl font-bold">SGDI</span>
         </Link>
 
         <div className="space-y-8">
           <div>
             <h1 className="text-4xl font-bold leading-tight">
-              Únete a las instituciones educativas que ya usan SGDE
+              Únete a las instituciones educativas que ya usan SGDI
             </h1>
             <p className="mt-4 text-lg text-primary-foreground/80">
               Comienza gratis. Sin tarjeta de crédito.
@@ -41,7 +41,7 @@ export default function RegisterPage() {
         </div>
 
         <p className="text-sm text-primary-foreground/60">
-          &copy; {new Date().getFullYear()} SGDE — Sistema de Gestion Documental Educativa
+          &copy; {new Date().getFullYear()} SGDI — Sistema de Gestion Documental Integral
         </p>
       </div>
 
@@ -53,8 +53,8 @@ export default function RegisterPage() {
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary">
               <GraduationCap className="h-7 w-7 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold">SGDE</h1>
-            <p className="text-sm text-muted-foreground">Sistema de Gestion Documental Educativa</p>
+            <h1 className="text-2xl font-bold">SGDI</h1>
+            <p className="text-sm text-muted-foreground">Sistema de Gestion Documental Integral</p>
           </div>
 
           <RegisterForm />

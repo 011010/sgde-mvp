@@ -559,10 +559,10 @@ export default function Home() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                   <GraduationCap className="h-5 w-5 text-primary-foreground" aria-hidden />
                 </div>
-                <span className="font-semibold">SGDE</span>
+                <span className="font-semibold">SGDI</span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Sistema de Gestión Documental Educativa — SGI Grupo Multisitios 3
+                Sistema de Gestión Documental Integral — SGI Grupo Multisitios 3
               </p>
             </div>
             <div className="flex flex-col items-center md:items-end gap-1">

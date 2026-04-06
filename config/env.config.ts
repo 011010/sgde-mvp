@@ -43,7 +43,7 @@ export const env = {
     redirectUri: process.env.MICROSOFT_REDIRECT_URI || "",
   },
   app: {
-    name: process.env.APP_NAME || "SGDE",
+    name: process.env.APP_NAME || "SGDI",
     url: process.env.APP_URL || "http://localhost:3000",
     nodeEnv: process.env.NODE_ENV || "development",
     isDevelopment: process.env.NODE_ENV === "development",
@@ -55,7 +55,7 @@ export const env = {
     port: parseInt(process.env.SMTP_PORT || "587", 10),
     user: process.env.SMTP_USER || "",
     password: process.env.SMTP_PASSWORD || "",
-    from: process.env.SMTP_FROM || "noreply@sgde.local",
+    from: process.env.SMTP_FROM || "noreply@sgdi.local",
   },
 } as const;
 

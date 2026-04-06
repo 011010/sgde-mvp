@@ -12,7 +12,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "SGDE - Sistema de Gestion Documental Educativa",
+  title: "SGDI - Sistema de Gestion Documental Integral",
   description:
     "Modern document management system for educational institutions with cloud integration and role-based access control",
 };
