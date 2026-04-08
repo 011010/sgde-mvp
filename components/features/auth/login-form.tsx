@@ -28,34 +28,18 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      const result = await signIn("credentials", {
+      const callbackUrl =
+        new URLSearchParams(window.location.search).get("callbackUrl") || "/dashboard";
+
+      await signIn("credentials", {
         email: data.email,
         password: data.password,
-        redirect: false,
+        redirectTo: callbackUrl.startsWith("/") ? callbackUrl : "/dashboard",
       });
-
-      if (result?.error) {
-        toast.error("Correo o contraseña incorrectos", {
-          description: "Verifica tus credenciales e intenta de nuevo.",
-        });
-        return;
-      }
-
-      if (result?.ok) {
-        toast.success("¡Inicio de sesión exitoso!", {
-          description: "Redirigiendo al panel...",
-        });
-        // Full page redirect so middleware sees the new session cookie
-        const raw = new URLSearchParams(window.location.search).get("callbackUrl") || "/dashboard";
-        const callbackUrl = raw.startsWith("/") ? raw : "/dashboard";
-        window.location.href = callbackUrl;
-        return;
-      }
     } catch {
       toast.error("Ocurrió un error", {
         description: "Por favor intenta más tarde.",
       });
-    } finally {
       setIsLoading(false);
     }
   };

@@ -78,7 +78,12 @@ function FolderTreeItem({
   onSelect: (id: string | undefined) => void;
   expandedFolders: Set<string>;
   onToggle: (id: string) => void;
-  onEdit: (folder: { id: string; name: string; description: string | null }) => void;
+  onEdit: (folder: {
+    id: string;
+    name: string;
+    description: string | null;
+    parentId: string | null;
+  }) => void;
   onDelete: (folder: { id: string; name: string }) => void;
 }) {
   const isExpanded = expandedFolders.has(folder.id);
@@ -136,7 +141,12 @@ function FolderTreeItem({
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               onClick={() =>
-                onEdit({ id: folder.id, name: folder.name, description: folder.description })
+                onEdit({
+                  id: folder.id,
+                  name: folder.name,
+                  description: folder.description,
+                  parentId: folder.parentId,
+                })
               }
             >
               <Pencil className="mr-2 h-4 w-4" />
@@ -191,6 +201,7 @@ export default function DocumentsPage() {
     id?: string;
     name: string;
     description: string;
+    parentId?: string;
   }>({ open: false, mode: "create", name: "", description: "" });
   const [deleteFolderConfirm, setDeleteFolderConfirm] = useState<{
     open: boolean;
@@ -253,11 +264,16 @@ export default function DocumentsPage() {
       await createFolder.mutateAsync({
         name: folderModal.name,
         description: folderModal.description || undefined,
+        parentId: folderModal.parentId,
       });
     } else if (folderModal.id) {
       await updateFolder.mutateAsync({
         id: folderModal.id,
-        data: { name: folderModal.name, description: folderModal.description || undefined },
+        data: {
+          name: folderModal.name,
+          description: folderModal.description || undefined,
+          parentId: folderModal.parentId,
+        },
       });
     }
     setFolderModal({ open: false, mode: "create", name: "", description: "" });
@@ -318,7 +334,13 @@ export default function DocumentsPage() {
               size="icon"
               className="h-6 w-6"
               onClick={() =>
-                setFolderModal({ open: true, mode: "create", name: "", description: "" })
+                setFolderModal({
+                  open: true,
+                  mode: "create",
+                  name: "",
+                  description: "",
+                  parentId: selectedFolderId,
+                })
               }
             >
               <FolderPlus className="h-4 w-4" />
@@ -363,6 +385,7 @@ export default function DocumentsPage() {
                   id: f.id,
                   name: f.name,
                   description: f.description || "",
+                  parentId: f.parentId || undefined,
                 })
               }
               onDelete={(f) => setDeleteFolderConfirm({ open: true, id: f.id, name: f.name })}
@@ -643,7 +666,7 @@ export default function DocumentsPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {folderModal.mode === "create" ? "Nueva Carpeta" : "Renombrar Carpeta"}
+              {folderModal.mode === "create" ? "Nueva Carpeta" : "Editar Carpeta"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
@@ -663,6 +686,31 @@ export default function DocumentsPage() {
                 onChange={(e) => setFolderModal((s) => ({ ...s, description: e.target.value }))}
                 placeholder="Descripción opcional"
               />
+            </div>
+            <div className="space-y-1">
+              <Label>Carpeta Padre</Label>
+              <Select
+                value={folderModal.parentId || "root"}
+                onValueChange={(value) =>
+                  setFolderModal((s) => ({ ...s, parentId: value === "root" ? undefined : value }))
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar carpeta padre" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="root">Sin carpeta padre (raíz)</SelectItem>
+                  {folderTree.map((folder) => (
+                    <SelectItem
+                      key={folder.id}
+                      value={folder.id}
+                      disabled={folder.id === folderModal.id}
+                    >
+                      {folder.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>

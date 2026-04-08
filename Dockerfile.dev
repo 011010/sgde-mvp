@@ -10,8 +10,8 @@ WORKDIR /app
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install all dependencies (including dev dependencies)
-RUN npm install && npm cache clean --force
+# Install all dependencies (including optional native binaries like lightningcss)
+RUN npm install --include=optional && npm cache clean --force
 
 # Copy prisma schema
 COPY prisma ./prisma
