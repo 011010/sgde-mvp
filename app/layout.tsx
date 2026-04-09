@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   title: "SGDI - Sistema de Gestion Documental Integral",
   description:
     "Modern document management system for educational institutions with cloud integration and role-based access control",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
