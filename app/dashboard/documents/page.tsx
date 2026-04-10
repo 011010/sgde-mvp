@@ -93,6 +93,24 @@ function FolderTreeItem({
   return (
     <div>
       <div className="group flex items-center gap-1">
+        {hasChildren ? (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggle(folder.id);
+            }}
+            className="p-0.5 hover:bg-muted-foreground/10 rounded shrink-0"
+            style={{ marginLeft: `${(level + 1) * 12 + 8}px` }}
+          >
+            {isExpanded ? (
+              <ChevronDown className="h-3.5 w-3.5" />
+            ) : (
+              <ChevronRight className="h-3.5 w-3.5" />
+            )}
+          </button>
+        ) : (
+          <span className="w-5 shrink-0" style={{ marginLeft: `${(level + 1) * 12 + 8}px` }} />
+        )}
         <button
           onClick={() => {
             onSelect(folder.id);
@@ -101,25 +119,7 @@ function FolderTreeItem({
             "flex-1 flex items-center gap-1 rounded-md px-2 py-1.5 text-sm transition-colors min-w-0",
             isSelected ? "bg-primary text-primary-foreground" : "hover:bg-muted"
           )}
-          style={{ paddingLeft: `${(level + 1) * 12 + 8}px` }}
         >
-          {hasChildren ? (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggle(folder.id);
-              }}
-              className="p-0.5 hover:bg-muted-foreground/10 rounded shrink-0"
-            >
-              {isExpanded ? (
-                <ChevronDown className="h-3.5 w-3.5" />
-              ) : (
-                <ChevronRight className="h-3.5 w-3.5" />
-              )}
-            </button>
-          ) : (
-            <span className="w-5 shrink-0" />
-          )}
           {isSelected ? (
             <FolderOpen className="h-4 w-4 shrink-0" />
           ) : (
