@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X, ChevronRight, GraduationCap, Target, Award, Zap, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -148,7 +149,13 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-3">
-            <img src="/tecnm-logo.png" alt="TecNM" className="h-10 w-auto object-contain" />
+            <Image
+              src="/tecnm-logo.png"
+              alt="TecNM"
+              width={40}
+              height={40}
+              className="h-10 w-auto object-contain"
+            />
             <span className="text-xl font-bold">SGDI</span>
           </Link>
 
@@ -366,9 +373,11 @@ export default function Home() {
                 >
                   <div className="shrink-0 flex items-center justify-center w-12 h-12 mt-0.5">
                     {inst.logo ? (
-                      <img
+                      <Image
                         src={inst.logo}
                         alt={inst.nombre}
+                        width={48}
+                        height={48}
                         className="w-12 h-12 object-contain rounded"
                       />
                     ) : (

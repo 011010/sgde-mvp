@@ -80,13 +80,16 @@ export function DocumentUploadModal({
 
     try {
       for (const file of uploadedFiles) {
+        const docTitle =
+          uploadedFiles.length === 1 ? title : file.name.replace(/\.[^/.]+$/, "") || title;
+
         const response = await fetch("/api/documents", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            title: title,
+            title: docTitle,
             description: description,
             fileName: file.name,
             fileSize: file.size,

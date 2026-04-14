@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Loader2, User, Bell, Lock, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,40 +29,22 @@ export default function SettingsPage() {
   const changePassword = useChangePassword();
   const updateNotificationSettings = useUpdateNotificationSettings();
 
-  // Profile form state — initialized via useEffect once data loads
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-
-  useEffect(() => {
-    if (profileData?.data) {
-      setName(profileData.data.name || "");
-      setEmail(profileData.data.email || "");
-    }
-  }, [profileData]);
+  // Profile form state — initialized lazily from profile data
+  const [name, setName] = useState(() => profileData?.data?.name || "");
+  const [email, setEmail] = useState(() => profileData?.data?.email || "");
 
   // Password form state
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Notification state — initialized via useEffect
-  const [notifications, setNotifications] = useState({
-    emailNotifications: true,
-    documentShared: true,
-    documentUpdated: true,
-    systemUpdates: true,
-  });
-
-  useEffect(() => {
-    if (notificationData?.data) {
-      setNotifications({
-        emailNotifications: notificationData.data.emailNotifications ?? true,
-        documentShared: notificationData.data.documentShared ?? true,
-        documentUpdated: notificationData.data.documentUpdated ?? true,
-        systemUpdates: notificationData.data.systemUpdates ?? true,
-      });
-    }
-  }, [notificationData]);
+  // Notification state — initialized lazily from notification data
+  const [notifications, setNotifications] = useState(() => ({
+    emailNotifications: notificationData?.data?.emailNotifications ?? true,
+    documentShared: notificationData?.data?.documentShared ?? true,
+    documentUpdated: notificationData?.data?.documentUpdated ?? true,
+    systemUpdates: notificationData?.data?.systemUpdates ?? true,
+  }));
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -213,9 +195,7 @@ export default function SettingsPage() {
                     />
                   </div>
                   <Button type="submit" disabled={updateProfile.isPending}>
-                    {updateProfile.isPending && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
+                    {updateProfile.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Save Changes
                   </Button>
                 </form>
@@ -290,9 +270,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Change Password</CardTitle>
-              <CardDescription>
-                Use a strong password with at least 8 characters.
-              </CardDescription>
+              <CardDescription>Use a strong password with at least 8 characters.</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handlePasswordSubmit} className="space-y-4">
@@ -340,9 +318,7 @@ export default function SettingsPage() {
                     (!!confirmPassword && newPassword !== confirmPassword)
                   }
                 >
-                  {changePassword.isPending && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
+                  {changePassword.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Update Password
                 </Button>
               </form>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { FileText, Download, ExternalLink, ZoomIn, ZoomOut } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -46,11 +47,14 @@ export function DocumentPreview({ document, isOpen, onClose }: DocumentPreviewPr
     if (isImage) {
       return (
         <div className="flex items-center justify-center overflow-auto bg-gray-100 rounded-lg min-h-[400px]">
-          <img
+          <Image
             src={document.fileUrl}
             alt={document.title}
+            width={800}
+            height={600}
             className="max-w-full max-h-[600px] object-contain transition-transform"
             style={{ transform: `scale(${zoom / 100})` }}
+            unoptimized
           />
         </div>
       );

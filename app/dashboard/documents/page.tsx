@@ -17,6 +17,7 @@ import {
   MoreVertical,
   ChevronRight,
   ChevronDown,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,6 +57,7 @@ import {
   useDeleteFolder,
   useFolderTree,
   useFolderPath,
+  useDownloadFolder,
 } from "@/hooks/use-api";
 import { cn } from "@/utils/cn";
 import type { FolderTreeNode } from "@/lib/application/services/folder.service";
@@ -71,6 +73,7 @@ function FolderTreeItem({
   onToggle,
   onEdit,
   onDelete,
+  onDownload,
 }: {
   folder: FolderTreeNode;
   level: number;
@@ -85,6 +88,7 @@ function FolderTreeItem({
     parentId: string | null;
   }) => void;
   onDelete: (folder: { id: string; name: string }) => void;
+  onDownload: (folderId: string) => void;
 }) {
   const isExpanded = expandedFolders.has(folder.id);
   const isSelected = selectedFolderId === folder.id;
@@ -139,6 +143,10 @@ function FolderTreeItem({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onDownload(folder.id)}>
+              <Download className="mr-2 h-4 w-4" />
+              Descargar carpeta
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() =>
                 onEdit({
@@ -175,6 +183,7 @@ function FolderTreeItem({
               onToggle={onToggle}
               onEdit={onEdit}
               onDelete={onDelete}
+              onDownload={onDownload}
             />
           ))}
         </div>
@@ -242,6 +251,7 @@ export default function DocumentsPage() {
   const createFolder = useCreateFolder();
   const updateFolder = useUpdateFolder();
   const deleteFolder = useDeleteFolder();
+  const downloadFolder = useDownloadFolder();
 
   const documents = data?.data?.documents || [];
   const pagination = data?.data?.pagination;
@@ -389,6 +399,7 @@ export default function DocumentsPage() {
                 })
               }
               onDelete={(f) => setDeleteFolderConfirm({ open: true, id: f.id, name: f.name })}
+              onDownload={(folderId) => downloadFolder.mutate(folderId)}
             />
           ))}
         </div>

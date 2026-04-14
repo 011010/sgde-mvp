@@ -601,6 +601,37 @@ export function useFolderPath(folderId: string | null) {
   });
 }
 
+export function useDownloadFolder() {
+  return useMutation({
+    mutationFn: async (folderId: string) => {
+      const response = await fetch(`${API_BASE}/folders/${folderId}/download`);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Error al descargar la carpeta");
+      }
+      const blob = await response.blob();
+      const contentDisposition = response.headers.get("Content-Disposition");
+      const filename = contentDisposition
+        ? contentDisposition.split("filename=")[1]?.replace(/"/g, "")
+        : "carpeta.zip";
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    },
+    onSuccess: () => {
+      toast.success("Descarga de carpeta iniciada");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+}
+
 export function useDocuments(params?: {
   query?: string;
   categoryId?: string;
