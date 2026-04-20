@@ -156,7 +156,7 @@ export default function Home() {
               height={40}
               className="h-10 w-auto object-contain"
             />
-            <span className="text-xl font-bold">SGDI</span>
+            <span className="text-xl font-bold">SGI</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -223,7 +223,7 @@ export default function Home() {
                 Sistema de Gestión Integral — Grupo Multisitios 3
               </div>
               <h1 className="mb-6 text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
-                Sistema de Gestión <span className="text-primary">Integral (SGDI)</span>
+                Sistema de Gestión <span className="text-primary">Integral (SGI)</span>
               </h1>
               <p className="mx-auto mb-10 max-w-2xl text-lg md:text-xl text-muted-foreground leading-relaxed">
                 Plataforma institucional para la gestión, organización y control de documentos del
@@ -568,10 +568,10 @@ export default function Home() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
                   <GraduationCap className="h-5 w-5 text-primary-foreground" aria-hidden />
                 </div>
-                <span className="font-semibold">SGDI</span>
+                <span className="font-semibold">SGI</span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Sistema de Gestión Documental Integral — SGI Grupo Multisitios 3
+                Sistema de Gestión Integral — SGI Grupo Multisitios 3
               </p>
             </div>
             <div className="flex flex-col items-center md:items-end gap-1">

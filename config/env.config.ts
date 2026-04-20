@@ -43,7 +43,7 @@ export const env = {
     redirectUri: process.env.MICROSOFT_REDIRECT_URI || "",
   },
   app: {
-    name: process.env.APP_NAME || "SGDI",
+    name: process.env.APP_NAME || "SGI",
     url: process.env.APP_URL || "http://localhost:3000",
     nodeEnv: process.env.NODE_ENV || "development",
     isDevelopment: process.env.NODE_ENV === "development",
