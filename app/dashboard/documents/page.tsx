@@ -220,6 +220,15 @@ export default function DocumentsPage() {
 
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
 
+  const findFolderInTree = (nodes: FolderTreeNode[], id: string): FolderTreeNode | null => {
+    for (const node of nodes) {
+      if (node.id === id) return node;
+      const found = findFolderInTree(node.children, id);
+      if (found) return found;
+    }
+    return null;
+  };
+
   const toggleFolder = (id: string) => {
     setExpandedFolders((prev) => {
       const next = new Set(prev);
@@ -599,63 +608,232 @@ export default function DocumentsPage() {
             )}
           </div>
 
-          {/* Document View */}
-          <Card>
-            <CardContent className="p-0">
-              {viewMode === "list" ? (
-                <DocumentsTable
-                  documents={documents}
-                  isLoading={isLoading}
-                  onDelete={() => refetch()}
-                />
-              ) : (
-                <DocumentsGrid
-                  documents={documents}
-                  isLoading={isLoading}
-                  onDelete={() => refetch()}
-                />
-              )}
-            </CardContent>
-          </Card>
+          {/* Folder Grid (root view — no folder selected) */}
+          {selectedFolderId === undefined &&
+          !searchQuery &&
+          !selectedCategory &&
+          !selectedTag &&
+          !selectedStatus ? (
+            folderTree.length === 0 ? (
+              <Card>
+                <CardContent className="p-12 text-center">
+                  <FolderOpen className="h-12 w-12 mx-auto mb-4 text-muted-foreground/40" />
+                  <p className="text-sm font-medium text-muted-foreground">Sin carpetas aún</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Crea una carpeta para organizar tus documentos
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                {folderTree.map((folder) => (
+                  <div key={folder.id} className="group relative">
+                    <button
+                      onClick={() => {
+                        setSelectedFolderId(folder.id);
+                        setPage(1);
+                      }}
+                      className="w-full flex flex-col items-center gap-2 rounded-xl border bg-card p-4 transition-all duration-200 hover:bg-accent hover:shadow-sm"
+                    >
+                      <FolderOpen className="h-10 w-10 text-yellow-500" />
+                      <span className="text-sm font-medium text-center truncate w-full">
+                        {folder.name}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {folder.documentCount} doc{folder.documentCount !== 1 ? "s" : ""}
+                      </span>
+                    </button>
+                    <div className="absolute top-2 right-2">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                          >
+                            <MoreVertical className="h-3.5 w-3.5" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => downloadFolder.mutate(folder.id)}>
+                            <Download className="mr-2 h-4 w-4" />
+                            Descargar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              setFolderModal({
+                                open: true,
+                                mode: "edit",
+                                id: folder.id,
+                                name: folder.name,
+                                description: folder.description || "",
+                                parentId: folder.parentId || undefined,
+                              })
+                            }
+                          >
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Renombrar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() =>
+                              setDeleteFolderConfirm({
+                                open: true,
+                                id: folder.id,
+                                name: folder.name,
+                              })
+                            }
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Eliminar
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          ) : (
+            <>
+              {/* Subfolders inside selected folder */}
+              {selectedFolderId &&
+                (() => {
+                  const current = findFolderInTree(folderTree, selectedFolderId);
+                  return current?.children && current.children.length > 0 ? (
+                    <div className="mb-2">
+                      <h2 className="text-sm font-semibold text-muted-foreground mb-3">Carpetas</h2>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mb-4">
+                        {current.children.map((sub) => (
+                          <div key={sub.id} className="group relative">
+                            <button
+                              onClick={() => {
+                                setSelectedFolderId(sub.id);
+                                setPage(1);
+                              }}
+                              className="w-full flex flex-col items-center gap-2 rounded-xl border bg-card p-4 transition-all duration-200 hover:bg-accent hover:shadow-sm"
+                            >
+                              <FolderOpen className="h-10 w-10 text-yellow-500" />
+                              <span className="text-sm font-medium text-center truncate w-full">
+                                {sub.name}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {sub.documentCount} doc{sub.documentCount !== 1 ? "s" : ""}
+                              </span>
+                            </button>
+                            <div className="absolute top-2 right-2">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 opacity-0 group-hover:opacity-100"
+                                  >
+                                    <MoreVertical className="h-3.5 w-3.5" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => downloadFolder.mutate(sub.id)}>
+                                    <Download className="mr-2 h-4 w-4" />
+                                    Descargar
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      setFolderModal({
+                                        open: true,
+                                        mode: "edit",
+                                        id: sub.id,
+                                        name: sub.name,
+                                        description: sub.description || "",
+                                        parentId: sub.parentId || undefined,
+                                      })
+                                    }
+                                  >
+                                    <Pencil className="mr-2 h-4 w-4" />
+                                    Renombrar
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="text-destructive"
+                                    onClick={() =>
+                                      setDeleteFolderConfirm({
+                                        open: true,
+                                        id: sub.id,
+                                        name: sub.name,
+                                      })
+                                    }
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Eliminar
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
 
-          {/* Pagination */}
-          {pagination && (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                {pagination.total === 0 ? (
-                  "Sin documentos encontrados"
-                ) : (
-                  <>
-                    Mostrando {(pagination.page - 1) * pagination.limit + 1}–
-                    {Math.min(pagination.page * pagination.limit, pagination.total)} de{" "}
-                    {pagination.total} documentos
-                  </>
-                )}
-              </p>
-              {pagination.totalPages > 1 && (
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={pagination.page <= 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  >
-                    Anterior
-                  </Button>
-                  <span className="flex items-center px-3 text-sm text-muted-foreground">
-                    {pagination.page} / {pagination.totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={pagination.page >= pagination.totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                  >
-                    Siguiente
-                  </Button>
+              {/* Document View (inside folder or search active) */}
+              <Card>
+                <CardContent className="p-0">
+                  {viewMode === "list" ? (
+                    <DocumentsTable
+                      documents={documents}
+                      isLoading={isLoading}
+                      onDelete={() => refetch()}
+                    />
+                  ) : (
+                    <DocumentsGrid
+                      documents={documents}
+                      isLoading={isLoading}
+                      onDelete={() => refetch()}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Pagination */}
+              {pagination && (
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    {pagination.total === 0 ? (
+                      "Sin documentos encontrados"
+                    ) : (
+                      <>
+                        Mostrando {(pagination.page - 1) * pagination.limit + 1}–
+                        {Math.min(pagination.page * pagination.limit, pagination.total)} de{" "}
+                        {pagination.total} documentos
+                      </>
+                    )}
+                  </p>
+                  {pagination.totalPages > 1 && (
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={pagination.page <= 1}
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      >
+                        Anterior
+                      </Button>
+                      <span className="flex items-center px-3 text-sm text-muted-foreground">
+                        {pagination.page} / {pagination.totalPages}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={pagination.page >= pagination.totalPages}
+                        onClick={() => setPage((p) => p + 1)}
+                      >
+                        Siguiente
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
       </div>

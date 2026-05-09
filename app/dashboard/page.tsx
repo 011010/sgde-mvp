@@ -107,21 +107,8 @@ const quickActions = [
   },
 ];
 
-const fileTypeColors: Record<string, string> = {
-  PDF: "bg-red-500/10 text-red-600",
-  DOCX: "bg-blue-500/10 text-blue-600",
-  DOC: "bg-blue-500/10 text-blue-600",
-  XLSX: "bg-green-500/10 text-green-600",
-  XLS: "bg-green-500/10 text-green-600",
-  PPTX: "bg-orange-500/10 text-orange-600",
-  PPT: "bg-orange-500/10 text-orange-600",
-  PNG: "bg-purple-500/10 text-purple-600",
-  JPG: "bg-purple-500/10 text-purple-600",
-  JPEG: "bg-purple-500/10 text-purple-600",
-};
-
 export default function DashboardPage() {
-  const { data: documentsData, isLoading: docsLoading } = useDocuments({ limit: 5, page: 1 });
+  const { data: documentsData, isLoading: docsLoading } = useDocuments({ limit: 1, page: 1 });
   const { data: usersData, isLoading: usersLoading } = useUsers({ limit: 1, page: 1 });
   const { data: categoriesData, isLoading: catsLoading } = useCategories({ limit: 1, page: 1 });
   const { data: tagsData, isLoading: tagsLoading } = useTags({ limit: 1, page: 1 });
@@ -131,7 +118,6 @@ export default function DashboardPage() {
   const totalUsers = usersData?.data?.pagination?.total ?? 0;
   const totalCategories = categoriesData?.data?.pagination?.total ?? 0;
   const totalTags = tagsData?.data?.pagination?.total ?? 0;
-  const recentDocuments = documentsData?.data?.documents ?? [];
   const recentLogs = auditData?.data?.logs ?? [];
 
   const statsLoading = docsLoading || usersLoading || catsLoading || tagsLoading;
@@ -194,128 +180,40 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Recent Documents */}
-        <Card className="lg:col-span-2 transition-all duration-300 hover:shadow-md">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Documentos Recientes</CardTitle>
-              <CardDescription>Archivos subidos recientemente</CardDescription>
-            </div>
-            <Link href="/dashboard/documents">
-              <Button variant="ghost" size="sm">
-                Ver todos
-                <ArrowUpRight className="ml-1 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardHeader>
-          <CardContent>
-            {docsLoading ? (
-              <div className="space-y-4">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Skeleton className="h-9 w-9 rounded" />
-                      <div>
-                        <Skeleton className="h-4 w-36 mb-1" />
-                        <Skeleton className="h-3 w-20" />
-                      </div>
-                    </div>
-                    <Skeleton className="h-3 w-16" />
-                  </div>
-                ))}
-              </div>
-            ) : recentDocuments.length === 0 ? (
-              <div className="py-10 text-center">
-                <FileText className="h-10 w-10 mx-auto mb-3 text-muted-foreground/40" />
-                <p className="text-sm font-medium text-muted-foreground">Sin documentos aún</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Sube tu primer documento para comenzar
-                </p>
-                <Link href="/dashboard/documents?action=upload">
-                  <Button size="sm" className="mt-4">
-                    <Upload className="mr-2 h-4 w-4" />
-                    Subir Documento
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {recentDocuments.map((doc) => {
-                  const ext = doc.fileName?.split(".").pop()?.toUpperCase() || "FILE";
-                  const colorClass = fileTypeColors[ext] || "bg-gray-500/10 text-gray-600";
-                  return (
-                    <div
-                      key={doc.id}
-                      className="flex items-center justify-between group cursor-pointer rounded-lg p-2 hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div
-                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${colorClass}`}
-                        >
-                          {ext.slice(0, 3)}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">
-                            {doc.title || doc.fileName}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {doc.fileSize
-                              ? `${(doc.fileSize / 1024 / 1024).toFixed(1)} MB`
-                              : "Unknown size"}
-                          </p>
-                        </div>
-                      </div>
-                      <span className="text-xs text-muted-foreground shrink-0 ml-3">
-                        {new Date(doc.createdAt).toLocaleDateString("es-MX", {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Quick Actions */}
-        <Card className="transition-all duration-300 hover:shadow-md">
-          <CardHeader>
-            <CardTitle>Acciones Rápidas</CardTitle>
-            <CardDescription>Tareas comunes y accesos directos</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {quickActions.map((action) => {
-                const Icon = action.icon;
-                return (
-                  <Link
-                    key={action.title}
-                    href={action.href}
-                    className="group flex items-center gap-4 rounded-lg border p-4 transition-all duration-200 hover:bg-accent hover:shadow-sm"
+      {/* Quick Actions */}
+      <Card className="transition-all duration-300 hover:shadow-md">
+        <CardHeader>
+          <CardTitle>Acciones Rápidas</CardTitle>
+          <CardDescription>Tareas comunes y accesos directos</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {quickActions.map((action) => {
+              const Icon = action.icon;
+              return (
+                <Link
+                  key={action.title}
+                  href={action.href}
+                  className="group flex items-center gap-4 rounded-lg border p-4 transition-all duration-200 hover:bg-accent hover:shadow-sm"
+                >
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-lg ${action.color}`}
                   >
-                    <div
-                      className={`flex h-10 w-10 items-center justify-center rounded-lg ${action.color}`}
-                    >
-                      <Icon className="h-5 w-5" />
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-medium group-hover:text-primary transition-colors">
+                      {action.title}
                     </div>
-                    <div className="flex-1">
-                      <div className="font-medium group-hover:text-primary transition-colors">
-                        {action.title}
-                      </div>
-                      <div className="text-sm text-muted-foreground">{action.description}</div>
-                    </div>
-                    <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </Link>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                    <div className="text-sm text-muted-foreground">{action.description}</div>
+                  </div>
+                  <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Recent Activity */}
       <Card className="transition-all duration-300 hover:shadow-md">

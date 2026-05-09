@@ -9,6 +9,7 @@ import {
   Shield,
   UserPlus,
   Users as UsersIcon,
+  KeyRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,7 @@ import { EditUserModal } from "@/components/features/users/edit-user-modal";
 import { ManageUserRolesModal } from "@/components/features/users/manage-roles-modal";
 import { DeleteUserModal } from "@/components/features/users/delete-user-modal";
 import { CreateUserModal } from "@/components/features/users/create-user-modal";
+import { ResetPasswordModal } from "@/components/features/users/reset-password-modal";
 
 interface User {
   id: string;
@@ -74,6 +76,7 @@ export default function UsersPage() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [managingRolesUser, setManagingRolesUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
+  const [resettingPasswordUser, setResettingPasswordUser] = useState<User | null>(null);
 
   const { data, isLoading, error } = useUsers({
     query: searchQuery,
@@ -248,6 +251,10 @@ export default function UsersPage() {
                             <Shield className="mr-2 h-4 w-4" />
                             Gestionar Roles
                           </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setResettingPasswordUser(user)}>
+                            <KeyRound className="mr-2 h-4 w-4" />
+                            Restablecer Contraseña
+                          </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => setDeletingUser(user)}
                             className="text-red-600"
@@ -312,6 +319,12 @@ export default function UsersPage() {
         isOpen={!!deletingUser}
         onClose={() => setDeletingUser(null)}
         user={deletingUser}
+      />
+
+      <ResetPasswordModal
+        isOpen={!!resettingPasswordUser}
+        onClose={() => setResettingPasswordUser(null)}
+        user={resettingPasswordUser}
       />
     </div>
   );

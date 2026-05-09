@@ -143,6 +143,22 @@ export function useDeleteUser() {
   });
 }
 
+export function useResetUserPassword() {
+  return useMutation({
+    mutationFn: ({ id, newPassword }: { id: string; newPassword: string }) =>
+      fetchApi(`/users/${id}/reset-password`, {
+        method: "POST",
+        body: JSON.stringify({ newPassword }),
+      }),
+    onSuccess: () => {
+      toast.success("Contraseña restablecida correctamente");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+}
+
 // CATEGORIES HOOKS
 export function useCategories(params?: { query?: string; page?: number; limit?: number }) {
   return useQuery({
